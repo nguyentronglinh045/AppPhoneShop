@@ -36,12 +36,20 @@
     </LinearLayout>
 
     <ImageButton
+        android:id="@+id/btnManageVariants"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@android:drawable/ic_menu_manage"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Manage Variants" />
+
+    <ImageButton
         android:id="@+id/btnEditProduct"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:src="@android:drawable/ic_menu_edit"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Sửa" />
+        android:contentDescription="Edit" />
 
     <ImageButton
         android:id="@+id/btnDeleteProduct"
@@ -49,5 +57,5 @@
         android:layout_height="48dp"
         android:src="@android:drawable/ic_menu_delete"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Xóa" />
+        android:contentDescription="Delete" />
 </LinearLayout>

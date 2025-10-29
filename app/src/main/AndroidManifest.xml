@@ -62,6 +62,11 @@
             android:parentActivityName=".ManageAddressesActivity">
         </activity>
         <activity
+            android:name=".ManageVariantsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
             android:name=".RegisterActivity"
             android:exported="false">
         </activity>

@@ -56,11 +56,13 @@
                 android:gravity="center">
 
                 <ImageView
+                    android:id="@+id/imageEmptyState"
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:src="@drawable/ic_empty_orders"
                     android:alpha="0.5"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textEmptyState"

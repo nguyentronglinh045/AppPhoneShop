@@ -27,6 +27,20 @@ public class VariantRepository {
     void onFailure(Exception e);
   }
 
+  // Callback interface for saving variant
+  public interface OnVariantSavedListener {
+    void onSuccess();
+
+    void onFailure(Exception e);
+  }
+
+  // Callback interface for deleting variant
+  public interface OnVariantDeletedListener {
+    void onSuccess();
+
+    void onFailure(Exception e);
+  }
+
   /**
    * Load all variants for a specific product
    * 
@@ -118,5 +132,125 @@ public class VariantRepository {
     }
 
     return variant;
+  }
+
+  /**
+   * Create a new variant in Firestore
+   * 
+   * @param variant  The variant to create
+   * @param listener Callback listener
+   */
+  public void createVariant(ProductVariant variant, OnVariantSavedListener listener) {
+    // Generate variant ID if not set
+    if (variant.getVariantId() == null || variant.getVariantId().isEmpty()) {
+      variant.setVariantId(generateVariantId(variant.getProductId()));
+    }
+
+    // Convert variant to Firestore map
+    java.util.Map<String, Object> variantMap = variantToMap(variant);
+
+    firestore.collection(COLLECTION_VARIANTS)
+        .document(variant.getVariantId())
+        .set(variantMap)
+        .addOnSuccessListener(aVoid -> {
+          Log.d(TAG, "Variant created successfully: " + variant.getVariantId());
+          listener.onSuccess();
+        })
+        .addOnFailureListener(e -> {
+          Log.e(TAG, "Failed to create variant", e);
+          listener.onFailure(e);
+        });
+  }
+
+  /**
+   * Update an existing variant in Firestore
+   * 
+   * @param variant  The variant to update
+   * @param listener Callback listener
+   */
+  public void updateVariant(ProductVariant variant, OnVariantSavedListener listener) {
+    if (variant.getVariantId() == null || variant.getVariantId().isEmpty()) {
+      listener.onFailure(new IllegalArgumentException("Variant ID is required for update"));
+      return;
+    }
+
+    // Convert variant to Firestore map
+    java.util.Map<String, Object> variantMap = variantToMap(variant);
+
+    firestore.collection(COLLECTION_VARIANTS)
+        .document(variant.getVariantId())
+        .set(variantMap)
+        .addOnSuccessListener(aVoid -> {
+          Log.d(TAG, "Variant updated successfully: " + variant.getVariantId());
+          listener.onSuccess();
+        })
+        .addOnFailureListener(e -> {
+          Log.e(TAG, "Failed to update variant", e);
+          listener.onFailure(e);
+        });
+  }
+
+  /**
+   * Delete a variant from Firestore
+   * 
+   * @param variantId The variant ID to delete
+   * @param listener  Callback listener
+   */
+  public void deleteVariant(String variantId, OnVariantDeletedListener listener) {
+    firestore.collection(COLLECTION_VARIANTS)
+        .document(variantId)
+        .delete()
+        .addOnSuccessListener(aVoid -> {
+          Log.d(TAG, "Variant deleted successfully: " + variantId);
+          listener.onSuccess();
+        })
+        .addOnFailureListener(e -> {
+          Log.e(TAG, "Failed to delete variant", e);
+          listener.onFailure(e);
+        });
+  }
+
+  /**
+   * Generate unique variant ID
+   * 
+   * @param productId The product ID
+   * @return Generated variant ID
+   */
+  private String generateVariantId(String productId) {
+    long timestamp = System.currentTimeMillis();
+    return productId + "-variant-" + timestamp;
+  }
+
+  /**
+   * Convert ProductVariant to Firestore map with nested structure
+   */
+  private java.util.Map<String, Object> variantToMap(ProductVariant variant) {
+    java.util.Map<String, Object> map = new java.util.HashMap<>();
+
+    // Main fields
+    map.put("productId", variant.getProductId());
+
+    // Attributes group (nested map)
+    java.util.Map<String, Object> attributes = new java.util.HashMap<>();
+    attributes.put("color", variant.getColor());
+    attributes.put("colorHex", variant.getColorHex());
+    attributes.put("ram", variant.getRam());
+    attributes.put("storage", variant.getStorage());
+    map.put("attributes", attributes);
+
+    // Display group (nested map)
+    java.util.Map<String, Object> display = new java.util.HashMap<>();
+    display.put("name", variant.getName());
+    display.put("shortName", variant.getShortName());
+    map.put("display", display);
+
+    // Inventory group (nested map)
+    java.util.Map<String, Object> inventory = new java.util.HashMap<>();
+    inventory.put("isAvailable", variant.isAvailable());
+    inventory.put("sku", variant.getSku());
+    inventory.put("stockQuantity", variant.getStockQuantity());
+    map.put("inventory", inventory);
+
+    return map;
   }
 }

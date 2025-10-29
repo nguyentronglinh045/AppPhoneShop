@@ -15,6 +15,7 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminAdapte
   private final List<Product> products;
   private final OnEditListener onEditListener;
   private final OnDeleteListener onDeleteListener;
+  private final OnManageVariantsListener onManageVariantsListener;
 
   public interface OnEditListener {
     void onEdit(Product product);
@@ -24,10 +25,16 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminAdapte
     void onDelete(Product product);
   }
 
-  public ProductAdminAdapter(List<Product> products, OnEditListener onEditListener, OnDeleteListener onDeleteListener) {
+  public interface OnManageVariantsListener {
+    void onManageVariants(Product product);
+  }
+
+  public ProductAdminAdapter(List<Product> products, OnEditListener onEditListener,
+      OnDeleteListener onDeleteListener, OnManageVariantsListener onManageVariantsListener) {
     this.products = products;
     this.onEditListener = onEditListener;
     this.onDeleteListener = onDeleteListener;
+    this.onManageVariantsListener = onManageVariantsListener;
   }
 
   @NonNull
@@ -55,9 +62,11 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminAdapte
       // Hiển thị ảnh skeleton cho sản phẩm không có URL ảnh
       imageView.setImageResource(R.drawable.ic_image_placeholder);
     }
+    holder.btnManageVariants.setOnClickListener(v -> onManageVariantsListener.onManageVariants(product));
     holder.btnEdit.setOnClickListener(v -> onEditListener.onEdit(product));
     holder.btnDelete.setOnClickListener(v -> onDeleteListener.onDelete(product));
-    // Hiển thị luôn nút edit/xóa
+    // Show all buttons
+    holder.btnManageVariants.setVisibility(View.VISIBLE);
     holder.btnEdit.setVisibility(View.VISIBLE);
     holder.btnDelete.setVisibility(View.VISIBLE);
   }
@@ -69,13 +78,14 @@ public class ProductAdminAdapter extends RecyclerView.Adapter<ProductAdminAdapte
 
   static class ProductViewHolder extends RecyclerView.ViewHolder {
     TextView textName, textPrice;
-    ImageButton btnEdit, btnDelete;
+    ImageButton btnManageVariants, btnEdit, btnDelete;
     android.widget.ImageView imageProduct;
 
     ProductViewHolder(View itemView) {
       super(itemView);
       textName = itemView.findViewById(R.id.textProductName);
       textPrice = itemView.findViewById(R.id.textProductPrice);
+      btnManageVariants = itemView.findViewById(R.id.btnManageVariants);
       btnEdit = itemView.findViewById(R.id.btnEditProduct);
       btnDelete = itemView.findViewById(R.id.btnDeleteProduct);
       imageProduct = itemView.findViewById(R.id.imageProduct);

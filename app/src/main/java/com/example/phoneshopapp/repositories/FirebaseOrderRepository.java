@@ -268,6 +268,40 @@ public class FirebaseOrderRepository implements OrderRepository {
         return "ORD_" + datePart + "_" + String.valueOf(timestamp).substring(8);
     }
 
+    @Override
+    public void getAllOrders(OrdersCallback callback) {
+        ordersRef.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Order> orders = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        try {
+                            Order order = documentToOrder(document);
+                            orders.add(order);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error converting document to Order: " + document.getId(), e);
+                        }
+                    }
+
+                    // Sort by createdAt descending (newest first)
+                    orders.sort((o1, o2) -> {
+                        if (o1.getCreatedAt() == null && o2.getCreatedAt() == null)
+                            return 0;
+                        if (o1.getCreatedAt() == null)
+                            return 1;
+                        if (o2.getCreatedAt() == null)
+                            return -1;
+                        return o2.getCreatedAt().compareTo(o1.getCreatedAt());
+                    });
+
+                    Log.d(TAG, "Retrieved " + orders.size() + " orders (all)");
+                    callback.onSuccess(orders);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error getting all orders", e);
+                    callback.onError("Error loading orders: " + e.getMessage());
+                });
+    }
+
     // Helper method to convert Order to Map for Firestore
     private Map<String, Object> orderToMap(Order order) {
         Map<String, Object> map = new HashMap<>();
