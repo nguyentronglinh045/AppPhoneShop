@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/textAverageRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4.8"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary" />
+
+    <RatingBar
+        android:id="@+id/ratingBarAverage"
+        style="@style/Widget.AppCompat.RatingBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="0.5"
+        android:rating="4.8"
+        android:isIndicator="true"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/textReviewCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(120 đánh giá)"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="2dp" />
+
+    <Button
+        android:id="@+id/buttonWriteReview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Viết đánh giá"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:drawableStart="@drawable/ic_edit_24"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:drawablePadding="8dp" />
+
+</LinearLayout>

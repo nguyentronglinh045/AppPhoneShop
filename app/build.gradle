@@ -1,0 +1,81 @@
+plugins {
+    alias(libs.plugins.android.application)
+    // Add the Google services Gradle plugin
+    id 'com.google.gms.google-services'
+}
+
+android {
+    namespace 'com.example.phoneshopapp'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.example.phoneshopapp"
+        minSdk 31
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    
+    compileOptions.encoding = 'UTF-8'
+    buildFeatures {
+        viewBinding true
+    }
+    
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.constraintlayout
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    
+    // SwipeRefreshLayout for pull-to-refresh functionality
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    
+    // ViewPager2 for banner slider
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    
+    // Material Icons Font cho bottom navigation và UI
+    implementation 'com.mikepenz:iconics-core:5.4.0'
+    implementation 'com.mikepenz:iconics-views:5.4.0'
+    implementation 'com.mikepenz:google-material-typeface:4.0.0.2-kotlin@aar'
+    
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:34.3.0')
+    
+    // Firebase products
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-auth' // For user authentication
+    
+    // Glide for loading images from URLs
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    
+    // Gson cho JSON serialization (localStorage functionality)
+    implementation 'com.google.code.gson:gson:2.11.0'
+    
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}
