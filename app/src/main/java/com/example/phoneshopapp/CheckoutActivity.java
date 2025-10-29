@@ -7,6 +7,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,10 +35,11 @@ public class CheckoutActivity extends AppCompatActivity {
     // UI Components
     private MaterialToolbar toolbar;
     private RecyclerView recyclerViewCheckoutItems;
-    private MaterialTextView textTotalItems, textSubtotal, textShippingFee, textTotal;
-    private TextInputEditText editTextFullName, editTextPhone, editTextEmail, editTextNote;
+    private MaterialTextView textTotalItems, textSubtotal, textShippingFee, textTotal, textDiscount;
+    private LinearLayout layoutDiscount;
+    private TextInputEditText editTextFullName, editTextPhone, editTextEmail, editTextNote, editTextDiscountCode;
     private Spinner spinnerAddress;
-    private MaterialButton btnAddAddress, btnPlaceOrder, btnBack;
+    private MaterialButton btnAddAddress, btnPlaceOrder, btnBack, btnApplyDiscount;
     private RadioGroup radioGroupPayment;
 
     // Data
@@ -52,6 +54,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
     // Mock data for demo
     private double shippingFee = 30000; // Fixed shipping fee
+    private double discountAmount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,8 @@ public class CheckoutActivity extends AppCompatActivity {
         textSubtotal = findViewById(R.id.textSubtotal);
         textShippingFee = findViewById(R.id.textShippingFee);
         textTotal = findViewById(R.id.textTotal);
+        layoutDiscount = findViewById(R.id.layoutDiscount);
+        textDiscount = findViewById(R.id.textDiscount);
         editTextFullName = findViewById(R.id.editTextFullName);
         editTextPhone = findViewById(R.id.editTextPhone);
         editTextEmail = findViewById(R.id.editTextEmail);
@@ -99,6 +104,8 @@ public class CheckoutActivity extends AppCompatActivity {
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         btnBack = findViewById(R.id.btnBack);
         radioGroupPayment = findViewById(R.id.radioGroupPayment);
+        editTextDiscountCode = findViewById(R.id.editTextDiscountCode);
+        btnApplyDiscount = findViewById(R.id.btnApplyDiscount);
     }
 
     private void setupToolbar() {
@@ -138,6 +145,24 @@ public class CheckoutActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> onBackPressed());
 
         btnPlaceOrder.setOnClickListener(v -> processOrder());
+
+        btnApplyDiscount.setOnClickListener(v -> {
+            String code = editTextDiscountCode.getText().toString().trim();
+            if (code.equals("GIAM10")) {
+                // Apply 10% discount
+                double subtotal = 0;
+                for (CartItem item : cartItems) {
+                    subtotal += item.getProductPriceValue() * item.getQuantity();
+                }
+                discountAmount = subtotal * 0.1;
+                updatePricingSummary();
+                Toast.makeText(CheckoutActivity.this, "Mã giảm giá đã được áp dụng!", Toast.LENGTH_SHORT).show();
+            } else {
+                discountAmount = 0;
+                updatePricingSummary();
+                Toast.makeText(CheckoutActivity.this, "Mã giảm giá không hợp lệ!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadUserInfo() {
@@ -250,12 +275,19 @@ public class CheckoutActivity extends AppCompatActivity {
             subtotal += item.getProductPriceValue() * item.getQuantity();
         }
 
-        double total = subtotal + shippingFee;
+        double total = subtotal + shippingFee - discountAmount;
 
         textTotalItems.setText(String.format("%d sản phẩm", totalItems));
         textSubtotal.setText(String.format("₫%.0f", subtotal));
         textShippingFee.setText(String.format("₫%.0f", shippingFee));
         textTotal.setText(String.format("₫%.0f", total));
+
+        if (discountAmount > 0) {
+            layoutDiscount.setVisibility(View.VISIBLE);
+            textDiscount.setText(String.format("-₫%.0f", discountAmount));
+        } else {
+            layoutDiscount.setVisibility(View.GONE);
+        }
     }
 
     private void processOrder() {
@@ -386,7 +418,7 @@ public class CheckoutActivity extends AppCompatActivity {
         for (CartItem item : cartItems) {
             subtotal += item.getProductPriceValue() * item.getQuantity();
         }
-        PricingInfo pricingInfo = new PricingInfo(subtotal, shippingFee, 0);
+        PricingInfo pricingInfo = new PricingInfo(subtotal, shippingFee, discountAmount);
 
         // Create payment info
         PaymentInfo paymentInfo = new PaymentInfo(selectedPaymentMethod);
