@@ -1,5 +1,10 @@
 # Script để chạy ứng dụng Android trên emulator
-# Sử dụng: .\scripts\run-app.ps1
+# Sử dụng: .\scripts\run-app.ps1 [-NoLogs] [-KillStale]
+
+param(
+    [switch]$NoLogs,     # Không stream logcat để terminal rảnh tay
+    [switch]$KillStale   # Diệt các tiến trình adb logcat cũ và reset adb server
+)
 
 Write-Host "=== Starting Android App Launcher ===" -ForegroundColor Cyan
 
@@ -92,6 +97,25 @@ if (-not (Test-Path $emulatorPath)) {
 if (-not (Test-Path $adbPath)) {
     Write-Host "ERROR: ADB not found at $adbPath" -ForegroundColor Red
     exit 1
+}
+
+# Tùy chọn: dọn dẹp các tiến trình adb logcat cũ nếu cần
+if ($KillStale) {
+    Write-Host "\nCleaning up stale adb/logcat processes..." -ForegroundColor Yellow
+    try {
+        $procs = Get-CimInstance Win32_Process -Filter "Name = 'adb.exe'" -ErrorAction SilentlyContinue
+        if ($procs) {
+            $logcatProcs = $procs | Where-Object { $_.CommandLine -match 'logcat' }
+            foreach ($p in $logcatProcs) {
+                Write-Host " - Killing adb (PID=$($p.ProcessId)) running logcat" -ForegroundColor DarkYellow
+                Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue
+            }
+        }
+    } catch {}
+    & $adbPath kill-server | Out-Null
+    Start-Sleep -Milliseconds 300
+    & $adbPath start-server | Out-Null
+    Write-Host "Cleanup done." -ForegroundColor Green
 }
 
 # Bước 1: Liệt kê danh sách AVDs
@@ -188,8 +212,14 @@ if ($LASTEXITCODE -ne 0) {
 
 # Bước 7: Hiển thị log
 Write-Host "`n[7/7] App launched successfully! 🎉" -ForegroundColor Green
-Write-Host "`nMonitoring app logs (Ctrl+C to stop)..." -ForegroundColor Yellow
-Write-Host "========================================`n" -ForegroundColor Cyan
-
-# Hiển thị logcat với filter cho package
-& $adbPath logcat -s "AndroidRuntime:E" "*:W" | Select-String -Pattern $packageName -Context 0,3
+if (-not $NoLogs) {
+    Write-Host "`nMonitoring app logs (Ctrl+C to stop)..." -ForegroundColor Yellow
+    Write-Host "========================================`n" -ForegroundColor Cyan
+    # Hiển thị logcat với filter cho package
+    & $adbPath logcat -s "AndroidRuntime:E" "*:W" | Select-String -Pattern $packageName -Context 0,3
+} else {
+    Write-Host "`nSkipping logs (NoLogs enabled)." -ForegroundColor Yellow
+    Write-Host "Tip: To view logs manually, run:" -ForegroundColor Cyan
+    Write-Host "  `$adb = '$adbPath'" -ForegroundColor Gray
+    Write-Host "  & `$adb logcat -s 'AndroidRuntime:E' '*:W' | Select-String -Pattern $packageName -Context 0,3" -ForegroundColor Gray
+}

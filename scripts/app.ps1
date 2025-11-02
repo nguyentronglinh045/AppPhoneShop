@@ -3,7 +3,9 @@
 # Tu dong phat hien emulator da chay chua va chon script phu hop
 
 param(
-    [switch]$Force  # Buoc khoi dong lai emulator
+    [switch]$Force,     # Buoc chay full quy trinh
+    [switch]$NoLogs,    # Truyen xuong full run de khong stream logcat
+    [switch]$KillStale  # Don sach cac tien trinh adb/logcat cu neu bi ket
 )
 
 Write-Host "=== Smart Android App Runner ===" -ForegroundColor Cyan
@@ -50,6 +52,25 @@ if (-not (Test-Path $adbPath)) {
     exit $LASTEXITCODE
 }
 
+# Tùy chọn: dọn dẹp adb/logcat cũ nếu người dùng bật KillStale
+if ($KillStale) {
+    Write-Host "\nCleaning up stale adb/logcat processes..." -ForegroundColor Yellow
+    try {
+        $procs = Get-CimInstance Win32_Process -Filter "Name = 'adb.exe'" -ErrorAction SilentlyContinue
+        if ($procs) {
+            $logcatProcs = $procs | Where-Object { $_.CommandLine -match 'logcat' }
+            foreach ($p in $logcatProcs) {
+                Write-Host " - Killing adb (PID=$($p.ProcessId)) running logcat" -ForegroundColor DarkYellow
+                Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue
+            }
+        }
+    } catch {}
+    & $adbPath kill-server | Out-Null
+    Start-Sleep -Milliseconds 300
+    & $adbPath start-server | Out-Null
+    Write-Host "Cleanup done." -ForegroundColor Green
+}
+
 # Kiem tra xem emulator co dang chay khong
 Write-Host "`nChecking for running emulator..." -ForegroundColor Cyan
 
@@ -70,7 +91,15 @@ try {
             Write-Host "No emulator running. Starting full process..." -ForegroundColor Yellow
         }
         Write-Host ""
-        & "$scriptDir\run-app.ps1"
+        if ($NoLogs -and $KillStale) {
+            & "$scriptDir\run-app.ps1" -NoLogs -KillStale
+        } elseif ($NoLogs) {
+            & "$scriptDir\run-app.ps1" -NoLogs
+        } elseif ($KillStale) {
+            & "$scriptDir\run-app.ps1" -KillStale
+        } else {
+            & "$scriptDir\run-app.ps1"
+        }
     }
 } catch {
     Write-Host "Error checking emulator status: $_" -ForegroundColor Red
