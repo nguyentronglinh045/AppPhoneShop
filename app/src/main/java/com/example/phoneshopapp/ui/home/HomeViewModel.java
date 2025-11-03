@@ -20,6 +20,7 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<Category>> categories;
     private final MutableLiveData<List<Product>> popularProducts;
     private final MutableLiveData<List<Product>> bestDeals;
+    private final MutableLiveData<List<Product>> flashSaleProducts;
     private final MutableLiveData<Boolean> isLoading;
     private final MutableLiveData<String> errorMessage;
     private final ProductManager productManager;
@@ -27,6 +28,7 @@ public class HomeViewModel extends ViewModel {
     // Static cache để giữ data giữa các lần navigation
     private static List<Product> cachedPopularProducts = null;
     private static List<Product> cachedBestDeals = null;
+    private static List<Product> cachedFlashSaleProducts = null;
     private static long lastCacheTime = 0;
     private static final long CACHE_DURATION = 5 * 60 * 1000; // 5 phút cache
 
@@ -34,6 +36,7 @@ public class HomeViewModel extends ViewModel {
         categories = new MutableLiveData<>();
         popularProducts = new MutableLiveData<>();
         bestDeals = new MutableLiveData<>();
+        flashSaleProducts = new MutableLiveData<>();
         isLoading = new MutableLiveData<>();
         errorMessage = new MutableLiveData<>();
         productManager = ProductManager.getInstance();
@@ -59,6 +62,7 @@ public class HomeViewModel extends ViewModel {
     private boolean isCacheValid() {
         return cachedPopularProducts != null &&
                 cachedBestDeals != null &&
+                cachedFlashSaleProducts != null &&
                 (System.currentTimeMillis() - lastCacheTime) < CACHE_DURATION;
     }
 
@@ -67,22 +71,26 @@ public class HomeViewModel extends ViewModel {
         isLoading.setValue(false);
         popularProducts.setValue(new ArrayList<>(cachedPopularProducts));
         bestDeals.setValue(new ArrayList<>(cachedBestDeals));
+        flashSaleProducts.setValue(new ArrayList<>(cachedFlashSaleProducts));
         Log.d(TAG, "Loaded data from cache - Popular: " + cachedPopularProducts.size() +
-                ", Deals: " + cachedBestDeals.size());
+                ", Deals: " + cachedBestDeals.size() +
+                ", FlashSale: " + cachedFlashSaleProducts.size());
     }
 
     // Update cache với data mới
-    private void updateCache(List<Product> featured, List<Product> deals) {
+    private void updateCache(List<Product> featured, List<Product> deals, List<Product> flashSale) {
         cachedPopularProducts = new ArrayList<>(featured);
         cachedBestDeals = new ArrayList<>(deals);
+        cachedFlashSaleProducts = new ArrayList<>(flashSale);
         lastCacheTime = System.currentTimeMillis();
-        Log.d(TAG, "Cache updated with " + featured.size() + " featured and " + deals.size() + " deals");
+        Log.d(TAG, "Cache updated with " + featured.size() + " featured, " + deals.size() + " deals, and " + flashSale.size() + " flash sale products");
     }
 
     // Clear cache (có thể gọi khi cần refresh)
     public static void clearCache() {
         cachedPopularProducts = null;
         cachedBestDeals = null;
+        cachedFlashSaleProducts = null;
         lastCacheTime = 0;
         Log.d("HomeViewModel", "Cache cleared");
     }
@@ -100,11 +108,13 @@ public class HomeViewModel extends ViewModel {
 
                 List<Product> featured = new ArrayList<>();
                 List<Product> deals = new ArrayList<>();
+                List<Product> flashSale = new ArrayList<>();
 
                 for (Product product : products) {
                     Log.d(TAG, "Product: " + product.getName() +
                             " | Featured: " + product.isFeatured() +
                             " | BestDeal: " + product.isBestDeal() +
+                            " | FlashSale: " + product.isFlashSale() +
                             " | ImageUrl: " + product.getImageUrl());
 
                     if (product.isFeatured()) {
@@ -113,9 +123,12 @@ public class HomeViewModel extends ViewModel {
                     if (product.isBestDeal()) {
                         deals.add(product);
                     }
+                    if (product.isFlashSale()) {
+                        flashSale.add(product);
+                    }
                 }
 
-                Log.d(TAG, "Featured products: " + featured.size() + ", Best deals: " + deals.size());
+                Log.d(TAG, "Featured products: " + featured.size() + ", Best deals: " + deals.size() + ", Flash sale: " + flashSale.size());
 
                 // Nếu không có sản phẩm featured, hiển thị tất cả sản phẩm
                 if (featured.isEmpty() && !products.isEmpty()) {
@@ -129,14 +142,21 @@ public class HomeViewModel extends ViewModel {
                     deals.addAll(products);
                 }
 
+                // Nếu không có flash sale, hiển thị tất cả sản phẩm
+                if (flashSale.isEmpty() && !products.isEmpty()) {
+                    Log.d(TAG, "No flash sale products found, showing all " + products.size() + " products as flash sale");
+                    flashSale.addAll(products);
+                }
+
                 // Log final count
                 Log.d(TAG, "Final - Featured: " + featured.size() + ", Deals: " + deals.size());
 
                 // Update cache với data mới
-                updateCache(featured, deals);
+                updateCache(featured, deals, flashSale);
 
                 popularProducts.setValue(featured);
                 bestDeals.setValue(deals);
+                flashSaleProducts.setValue(flashSale);
             }
 
             @Override
@@ -180,6 +200,7 @@ public class HomeViewModel extends ViewModel {
 
                 List<Product> featured = new ArrayList<>();
                 List<Product> deals = new ArrayList<>();
+                List<Product> flashSale = new ArrayList<>();
 
                 for (Product product : products) {
                     if (product.isFeatured()) {
@@ -187,6 +208,9 @@ public class HomeViewModel extends ViewModel {
                     }
                     if (product.isBestDeal()) {
                         deals.add(product);
+                    }
+                    if (product.isFlashSale()) {
+                        flashSale.add(product);
                     }
                 }
 
@@ -202,11 +226,18 @@ public class HomeViewModel extends ViewModel {
                     deals.addAll(products);
                 }
 
-                Log.d(TAG, "Force refresh final - Featured: " + featured.size() + ", Deals: " + deals.size());
+                // Nếu không có flash sale, hiển thị tất cả sản phẩm
+                if (flashSale.isEmpty() && !products.isEmpty()) {
+                    Log.d(TAG, "No flash sale products found, showing all " + products.size() + " products as flash sale");
+                    flashSale.addAll(products);
+                }
 
-                updateCache(featured, deals);
+                Log.d(TAG, "Force refresh final - Featured: " + featured.size() + ", Deals: " + deals.size() + ", FlashSale: " + flashSale.size());
+
+                updateCache(featured, deals, flashSale);
                 popularProducts.setValue(featured);
                 bestDeals.setValue(deals);
+                flashSaleProducts.setValue(flashSale);
             }
 
             @Override
@@ -233,6 +264,10 @@ public class HomeViewModel extends ViewModel {
 
     public LiveData<List<Product>> getBestDeals() {
         return bestDeals;
+    }
+
+    public LiveData<List<Product>> getFlashSaleProducts() {
+        return flashSaleProducts;
     }
 
     public LiveData<Boolean> getIsLoading() {

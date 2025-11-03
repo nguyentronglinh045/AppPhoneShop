@@ -20,6 +20,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.phoneshopapp.CartManager;
 import com.example.phoneshopapp.CategoryAdapter;
+import com.example.phoneshopapp.FlashSaleAdapter;
 import com.example.phoneshopapp.ProductAdapter;
 import com.example.phoneshopapp.ProductGridAdapter;
 import com.example.phoneshopapp.ProductManager;
@@ -40,6 +41,7 @@ public class HomeFragment extends Fragment {
     private CategoryAdapter categoryAdapter;
     private ProductGridAdapter popularProductsAdapter;
     private ProductAdapter bestDealsAdapter;
+    private FlashSaleAdapter flashSaleAdapter;
     private BannerAdapter bannerAdapter;
     private ViewPager2 bannerViewPager;
     private LinearLayout dotsIndicator;
@@ -84,6 +86,12 @@ public class HomeFragment extends Fragment {
         binding.recyclerBestDeals.setLayoutManager(
                 new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.recyclerBestDeals.setAdapter(bestDealsAdapter);
+
+        // Flash Sale RecyclerView
+        flashSaleAdapter = new FlashSaleAdapter(new ArrayList<>());
+        binding.recyclerFlashSale.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.recyclerFlashSale.setAdapter(flashSaleAdapter);
     }
 
     private void observeData() {
@@ -129,6 +137,25 @@ public class HomeFragment extends Fragment {
                 // Không có dữ liệu - ẩn RecyclerView
                 binding.recyclerBestDeals.setVisibility(View.GONE);
                 Log.d(TAG, "No best deals to display");
+            }
+        });
+
+        // Flash Sale Products
+        homeViewModel.getFlashSaleProducts().observe(getViewLifecycleOwner(), products -> {
+            Log.d(TAG, "⚡ Flash sale products updated: " + products.size());
+            if (products != null && !products.isEmpty()) {
+                flashSaleAdapter.productList = products;
+                flashSaleAdapter.notifyDataSetChanged();
+                binding.recyclerFlashSale.setVisibility(View.VISIBLE);
+
+                // Log products for debugging
+                for (int i = 0; i < Math.min(5, products.size()); i++) {
+                    Log.d(TAG, "Flash Sale: " + products.get(i).getName());
+                }
+            } else {
+                // Không có dữ liệu - ẩn RecyclerView
+                binding.recyclerFlashSale.setVisibility(View.GONE);
+                Log.d(TAG, "No flash sale products to display");
             }
         });
 

@@ -11,6 +11,7 @@ public class Product {
     private String category;
     private boolean isFeatured;
     private boolean isBestDeal;
+    private boolean isFlashSale;
     private String brand; // Thêm thương hiệu
     private int stockQuantity; // Thêm số lượng tồn kho
 
@@ -29,7 +30,7 @@ public class Product {
 
     // Constructor đầy đủ với imageResourceId và brand, stockQuantity
     public Product(String id, String name, String price, int imageResourceId, String description, String category,
-            boolean isFeatured, boolean isBestDeal, String brand, int stockQuantity) {
+            boolean isFeatured, boolean isBestDeal, boolean isFlashSale, String brand, int stockQuantity) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -39,19 +40,20 @@ public class Product {
         this.category = category;
         this.isFeatured = isFeatured;
         this.isBestDeal = isBestDeal;
+        this.isFlashSale = isFlashSale;
         this.brand = brand;
         this.stockQuantity = stockQuantity;
     }
 
     // Constructor đầy đủ (backward compatibility)
     public Product(String id, String name, String price, int imageResourceId, String description, String category,
-            boolean isFeatured, boolean isBestDeal) {
-        this(id, name, price, imageResourceId, description, category, isFeatured, isBestDeal, "", 0);
+            boolean isFeatured, boolean isBestDeal, boolean isFlashSale) {
+        this(id, name, price, imageResourceId, description, category, isFeatured, isBestDeal, isFlashSale, "", 0);
     }
 
     // Constructor mới với Firebase fields
     public Product(String id, String name, String price, String imageUrl, String description,
-            String category, boolean isFeatured, boolean isBestDeal, String brand, int stockQuantity) {
+            String category, boolean isFeatured, boolean isBestDeal, boolean isFlashSale, String brand, int stockQuantity) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -61,13 +63,14 @@ public class Product {
         this.category = category;
         this.isFeatured = isFeatured;
         this.isBestDeal = isBestDeal;
+        this.isFlashSale = isFlashSale;
         this.brand = brand;
         this.stockQuantity = stockQuantity;
     }
 
     // Constructor ngắn gọn (tương thích với code cũ)
     public Product(String name, String price, int imageResourceId) {
-        this("", name, price, imageResourceId, "", "Phone", false, false);
+        this("", name, price, imageResourceId, "", "Phone", false, false, false);
     }
 
     // Helper method để parse price string thành number
@@ -122,6 +125,10 @@ public class Product {
 
     public boolean isBestDeal() {
         return isBestDeal;
+    }
+
+    public boolean isFlashSale() {
+        return isFlashSale;
     }
 
     public String getBrand() {
@@ -192,6 +199,10 @@ public class Product {
 
     public void setBestDeal(boolean bestDeal) {
         isBestDeal = bestDeal;
+    }
+
+    public void setFlashSale(boolean flashSale) {
+        isFlashSale = flashSale;
     }
 
     public void setBrand(String brand) {
