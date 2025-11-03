@@ -2,7 +2,10 @@ package com.example.phoneshopapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,7 +16,7 @@ import com.example.phoneshopapp.managers.AddressManager;
 import com.example.phoneshopapp.models.Address;
 import com.example.phoneshopapp.repositories.callbacks.AddressesCallback;
 import com.example.phoneshopapp.repositories.callbacks.UpdateCallback;
-import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -22,10 +25,12 @@ import java.util.List;
 
 public class ManageAddressesActivity extends AppCompatActivity implements AddressesAdapter.OnAddressActionListener {
 
-    private MaterialToolbar toolbar;
+    private androidx.appcompat.widget.Toolbar toolbar;
     private RecyclerView recyclerViewAddresses;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private MaterialTextView textEmptyState;
+    private LinearLayout layoutEmpty;
+    private TextView textEmptyMessage;
+    private MaterialButton btnAddFirstAddress;
     private FloatingActionButton fabAddAddress;
     
     private AddressesAdapter addressesAdapter;
@@ -35,26 +40,84 @@ public class ManageAddressesActivity extends AppCompatActivity implements Addres
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_addresses);
+        
+        try {
+            Log.d("ManageAddresses", "onCreate started");
+            setContentView(R.layout.activity_manage_addresses);
 
-        initViews();
-        setupToolbar();
-        setupRecyclerView();
-        setupClickListeners();
-        
-        // Initialize manager
-        addressManager = AddressManager.getInstance(this);
-        
-        // Load addresses
-        loadAddresses();
+            initViews();
+            setupToolbar();
+            setupRecyclerView();
+            setupClickListeners();
+            
+            // Initialize manager
+            Log.d("ManageAddresses", "Initializing AddressManager");
+            addressManager = AddressManager.getInstance(this);
+            
+            if (addressManager == null) {
+                Log.e("ManageAddresses", "Failed to initialize AddressManager");
+                Toast.makeText(this, "Lỗi khởi tạo hệ thống", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            
+            Log.d("ManageAddresses", "AddressManager initialized successfully");
+            
+            // Load addresses
+            loadAddresses();
+            
+        } catch (Exception e) {
+            Log.e("ManageAddresses", "Exception in onCreate", e);
+            Toast.makeText(this, "Lỗi khởi tạo: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private void initViews() {
+        Log.d("ManageAddresses", "initViews started");
+        
         toolbar = findViewById(R.id.toolbar);
+        if (toolbar == null) {
+            Log.e("ManageAddresses", "toolbar is null");
+            throw new RuntimeException("toolbar not found in layout");
+        }
+        
         recyclerViewAddresses = findViewById(R.id.recyclerViewAddresses);
+        if (recyclerViewAddresses == null) {
+            Log.e("ManageAddresses", "recyclerViewAddresses is null");
+            throw new RuntimeException("recyclerViewAddresses not found in layout");
+        }
+        
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        textEmptyState = findViewById(R.id.textEmptyState);
+        if (swipeRefreshLayout == null) {
+            Log.e("ManageAddresses", "swipeRefreshLayout is null");
+            throw new RuntimeException("swipeRefreshLayout not found in layout");
+        }
+        
+        layoutEmpty = findViewById(R.id.layoutEmpty);
+        if (layoutEmpty == null) {
+            Log.e("ManageAddresses", "layoutEmpty is null");
+            throw new RuntimeException("layoutEmpty not found in layout");
+        }
+        
+        // Find TextView inside layoutEmpty for displaying empty message
+        textEmptyMessage = layoutEmpty.findViewById(R.id.textEmptyMessage);
+        if (textEmptyMessage == null) {
+            Log.e("ManageAddresses", "textEmptyMessage is null");
+        }
+        
+        btnAddFirstAddress = layoutEmpty.findViewById(R.id.btnAddFirstAddress);
+        if (btnAddFirstAddress == null) {
+            Log.e("ManageAddresses", "btnAddFirstAddress is null");
+        }
+        
         fabAddAddress = findViewById(R.id.fabAddAddress);
+        if (fabAddAddress == null) {
+            Log.e("ManageAddresses", "fabAddAddress is null");
+            throw new RuntimeException("fabAddAddress not found in layout");
+        }
+        
+        Log.d("ManageAddresses", "initViews completed successfully");
     }
 
     private void setupToolbar() {
@@ -65,7 +128,7 @@ public class ManageAddressesActivity extends AppCompatActivity implements Addres
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {
@@ -81,44 +144,77 @@ public class ManageAddressesActivity extends AppCompatActivity implements Addres
             startActivityForResult(intent, AddEditAddressActivity.REQUEST_ADD_ADDRESS);
         });
 
+        // Add click listener for "Add First Address" button in empty state
+        if (btnAddFirstAddress != null) {
+            btnAddFirstAddress.setOnClickListener(v -> {
+                Intent intent = new Intent(this, AddEditAddressActivity.class);
+                startActivityForResult(intent, AddEditAddressActivity.REQUEST_ADD_ADDRESS);
+            });
+        }
+
         swipeRefreshLayout.setOnRefreshListener(this::loadAddresses);
     }
 
     private void loadAddresses() {
         swipeRefreshLayout.setRefreshing(true);
         
-        addressManager.getUserAddresses(new AddressesCallback() {
-            @Override
-            public void onSuccess(List<Address> addressList) {
-                runOnUiThread(() -> {
-                    swipeRefreshLayout.setRefreshing(false);
-                    addresses.clear();
-                    addresses.addAll(addressList);
-                    addressesAdapter.notifyDataSetChanged();
-                    
-                    updateEmptyState();
-                });
+        try {
+            // Check if addressManager is properly initialized
+            if (addressManager == null) {
+                Log.e("ManageAddresses", "AddressManager is null!");
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(this, "Lỗi khởi tạo AddressManager", Toast.LENGTH_LONG).show();
+                updateEmptyState();
+                return;
             }
+            
+            addressManager.getUserAddresses(new AddressesCallback() {
+                @Override
+                public void onSuccess(List<Address> addressList) {
+                    runOnUiThread(() -> {
+                        swipeRefreshLayout.setRefreshing(false);
+                        addresses.clear();
+                        if (addressList != null) {
+                            addresses.addAll(addressList);
+                        }
+                        addressesAdapter.notifyDataSetChanged();
+                        
+                        updateEmptyState();
+                    });
+                }
 
-            @Override
-            public void onError(String errorMessage) {
-                runOnUiThread(() -> {
-                    swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(ManageAddressesActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                    updateEmptyState();
-                });
-            }
-        });
+                @Override
+                public void onError(String errorMessage) {
+                    runOnUiThread(() -> {
+                        swipeRefreshLayout.setRefreshing(false);
+                        Log.e("ManageAddresses", "Error loading addresses: " + errorMessage);
+                        Toast.makeText(ManageAddressesActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        updateEmptyState();
+                    });
+                }
+            });
+        } catch (Exception e) {
+            Log.e("ManageAddresses", "Exception in loadAddresses", e);
+            swipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(this, "Lỗi không mong muốn: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            updateEmptyState();
+        }
     }
 
     private void updateEmptyState() {
         if (addresses.isEmpty()) {
             recyclerViewAddresses.setVisibility(View.GONE);
-            textEmptyState.setVisibility(View.VISIBLE);
-            textEmptyState.setText("Chưa có địa chỉ giao hàng.\nThêm địa chỉ mới để tiếp tục.");
+            if (layoutEmpty != null) {
+                layoutEmpty.setVisibility(View.VISIBLE);
+                if (textEmptyMessage != null) {
+                    textEmptyMessage.setText("Chưa có địa chỉ giao hàng.\nThêm địa chỉ mới để tiếp tục.");
+                }
+            }
         } else {
             recyclerViewAddresses.setVisibility(View.VISIBLE);
-            textEmptyState.setVisibility(View.GONE);
+            if (layoutEmpty != null) {
+                layoutEmpty.setVisibility(View.GONE);
+            }
         }
     }
 

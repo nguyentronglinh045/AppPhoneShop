@@ -1,16 +1,38 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.PhoneShopApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <!-- Base application theme - Material 3 Night Mode -->
+    <style name="Theme.PhoneShopApp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary_light</item>
-        <item name="colorPrimaryVariant">@color/primary</item>
         <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/primary_dark</item>
+        <item name="colorOnPrimaryContainer">@color/primary_light</item>
+        
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/primary_light</item>
-        <item name="colorSecondaryVariant">@color/primary</item>
+        <item name="colorSecondary">@color/secondary_light</item>
         <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondaryContainer">@color/secondary_variant</item>
+        <item name="colorOnSecondaryContainer">@color/secondary_light</item>
+        
+        <!-- Surface colors (dark surfaces for night mode) -->
+        <item name="colorSurface">#121212</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorSurfaceVariant">#1E1E1E</item>
+        <item name="colorOnSurfaceVariant">@color/text_disabled</item>
+        
+        <!-- Background -->
+        <item name="android:colorBackground">#121212</item>
+        <item name="colorOnBackground">@color/white</item>
+        
+        <!-- Error colors -->
+        <item name="colorError">@color/error_color</item>
+        <item name="colorOnError">@color/white</item>
+        
+        <!-- Outline -->
+        <item name="colorOutline">#3D3D3D</item>
+        <item name="colorOutlineVariant">#2D2D2D</item>
+        
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
     </style>
 </resources>

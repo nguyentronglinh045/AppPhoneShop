@@ -4,12 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.phoneshopapp.managers.AddressManager;
 import com.example.phoneshopapp.repositories.callbacks.UpdateCallback;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
@@ -32,11 +31,11 @@ public class AddEditAddressActivity extends AppCompatActivity {
     public static final String EXTRA_IS_DEFAULT = "is_default";
 
     // UI Components
-    private MaterialToolbar toolbar;
+    private androidx.appcompat.widget.Toolbar toolbar;
     private TextInputEditText editTextAddressName, editTextRecipientName, editTextPhone, editTextAddressDetails;
-    private Spinner spinnerProvince, spinnerDistrict, spinnerWard;
+    private AutoCompleteTextView spinnerProvince, spinnerDistrict, spinnerWard;
     private SwitchMaterial switchDefault;
-    private MaterialButton btnSave, btnCancel;
+    private MaterialButton btnSave;
 
     // Data
     private AddressManager addressManager;
@@ -70,8 +69,7 @@ public class AddEditAddressActivity extends AppCompatActivity {
         spinnerDistrict = findViewById(R.id.spinnerDistrict);
         spinnerWard = findViewById(R.id.spinnerWard);
         switchDefault = findViewById(R.id.switchDefault);
-        btnSave = findViewById(R.id.btnSave);
-        btnCancel = findViewById(R.id.btnCancel);
+        btnSave = findViewById(R.id.btnSaveAddress);
     }
 
     private void setupToolbar() {
@@ -81,7 +79,7 @@ public class AddEditAddressActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> finish());
     }
 
     private void setupSpinners() {
@@ -133,22 +131,18 @@ public class AddEditAddressActivity extends AppCompatActivity {
             // Add more wards
         };
 
-        ArrayAdapter<String> provinceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, provinces);
-        provinceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> provinceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, provinces);
         spinnerProvince.setAdapter(provinceAdapter);
 
-        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, districts);
-        districtAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> districtAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, districts);
         spinnerDistrict.setAdapter(districtAdapter);
 
-        ArrayAdapter<String> wardAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, wards);
-        wardAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> wardAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, wards);
         spinnerWard.setAdapter(wardAdapter);
     }
 
     private void setupClickListeners() {
         btnSave.setOnClickListener(v -> saveAddress());
-        btnCancel.setOnClickListener(v -> finish());
     }
 
     private void checkEditMode() {
@@ -191,12 +185,12 @@ public class AddEditAddressActivity extends AppCompatActivity {
         switchDefault.setChecked(intent.getBooleanExtra(EXTRA_IS_DEFAULT, false));
     }
 
-    private void setSpinnerSelection(Spinner spinner, String value) {
+    private void setSpinnerSelection(AutoCompleteTextView spinner, String value) {
         if (value != null && spinner.getAdapter() != null) {
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
             for (int i = 0; i < adapter.getCount(); i++) {
                 if (adapter.getItem(i).equals(value)) {
-                    spinner.setSelection(i);
+                    spinner.setText(adapter.getItem(i), false);
                     break;
                 }
             }
@@ -216,9 +210,9 @@ public class AddEditAddressActivity extends AppCompatActivity {
         String recipientName = editTextRecipientName.getText().toString().trim();
         String phone = editTextPhone.getText().toString().trim();
         String addressDetails = editTextAddressDetails.getText().toString().trim();
-        String province = spinnerProvince.getSelectedItem().toString();
-        String district = spinnerDistrict.getSelectedItem().toString();
-        String ward = spinnerWard.getSelectedItem().toString();
+        String province = spinnerProvince.getText().toString();
+        String district = spinnerDistrict.getText().toString();
+        String ward = spinnerWard.getText().toString();
         boolean isDefault = switchDefault.isChecked();
 
         if (isEditMode) {
@@ -260,18 +254,25 @@ public class AddEditAddressActivity extends AppCompatActivity {
         }
 
         // Validate spinners
-        if (spinnerProvince.getSelectedItemPosition() == 0) {
+        String provinceText = spinnerProvince.getText().toString();
+        String districtText = spinnerDistrict.getText().toString();
+        String wardText = spinnerWard.getText().toString();
+        
+        if (provinceText.isEmpty() || provinceText.equals("Chọn Tỉnh/Thành phố")) {
             Toast.makeText(this, "Vui lòng chọn Tỉnh/Thành phố", Toast.LENGTH_SHORT).show();
+            spinnerProvince.requestFocus();
             return false;
         }
 
-        if (spinnerDistrict.getSelectedItemPosition() == 0) {
+        if (districtText.isEmpty() || districtText.equals("Chọn Quận/Huyện")) {
             Toast.makeText(this, "Vui lòng chọn Quận/Huyện", Toast.LENGTH_SHORT).show();
+            spinnerDistrict.requestFocus();
             return false;
         }
 
-        if (spinnerWard.getSelectedItemPosition() == 0) {
+        if (wardText.isEmpty() || wardText.equals("Chọn Phường/Xã")) {
             Toast.makeText(this, "Vui lòng chọn Phường/Xã", Toast.LENGTH_SHORT).show();
+            spinnerWard.requestFocus();
             return false;
         }
 
@@ -310,6 +311,20 @@ public class AddEditAddressActivity extends AppCompatActivity {
         // Create address object for update
         com.example.phoneshopapp.models.Address address = new com.example.phoneshopapp.models.Address();
         address.setAddressId(addressId);
+        
+        // Get userId from UserManager to ensure it's set correctly
+        com.example.phoneshopapp.UserManager userManager = com.example.phoneshopapp.UserManager.getInstance(this);
+        String userId = userManager.getCurrentUserId();
+        if (userId == null) {
+            runOnUiThread(() -> {
+                btnSave.setEnabled(true);
+                btnSave.setText("Lưu");
+                Toast.makeText(AddEditAddressActivity.this, "Người dùng chưa đăng nhập", Toast.LENGTH_LONG).show();
+            });
+            return;
+        }
+        address.setUserId(userId);
+        
         address.setAddressName(addressName);
         address.setRecipientName(recipientName);
         address.setPhone(phone);

@@ -26,7 +26,17 @@ public class SimpleFirebaseAddressRepository implements AddressRepository {
     private final FirebaseFirestore db;
     
     public SimpleFirebaseAddressRepository() {
-        this.db = FirebaseFirestore.getInstance();
+        try {
+            Log.d(TAG, "Initializing FirebaseFirestore instance");
+            this.db = FirebaseFirestore.getInstance();
+            if (this.db == null) {
+                throw new RuntimeException("FirebaseFirestore.getInstance() returned null");
+            }
+            Log.d(TAG, "FirebaseFirestore initialized successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to initialize FirebaseFirestore", e);
+            throw new RuntimeException("Failed to initialize FirebaseFirestore", e);
+        }
     }
     
     @Override
@@ -234,14 +244,29 @@ public class SimpleFirebaseAddressRepository implements AddressRepository {
                     return;
                 }
                 
+                // Count how many updates we need to complete
+                final int totalUpdates = queryDocumentSnapshots.size();
+                final int[] completedUpdates = {0};
+                
                 // Update all existing default addresses to non-default
                 for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                     db.collection(COLLECTION_ADDRESSES)
                         .document(document.getId())
-                        .update("isDefault", false);
+                        .update("isDefault", false)
+                        .addOnSuccessListener(aVoid -> {
+                            completedUpdates[0]++;
+                            if (completedUpdates[0] == totalUpdates) {
+                                onSuccess.run();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.w(TAG, "Failed to update address to non-default: " + e.getMessage());
+                            completedUpdates[0]++;
+                            if (completedUpdates[0] == totalUpdates) {
+                                onSuccess.run();
+                            }
+                        });
                 }
-                
-                onSuccess.run();
             })
             .addOnFailureListener(e -> {
                 Log.e(TAG, "Error setting other addresses as non-default", e);

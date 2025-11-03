@@ -57,12 +57,13 @@
                     android:alpha="0.5" />
 
                 <TextView
+                    android:id="@+id/textEmptyMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="Không có địa chỉ nào"
                     android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"

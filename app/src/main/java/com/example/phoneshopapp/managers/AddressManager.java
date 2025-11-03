@@ -25,8 +25,15 @@ public class AddressManager {
 
     private AddressManager(Context context) {
         this.context = context.getApplicationContext();
-        // Use simple Firebase implementation instead of null
-        this.addressRepository = new com.example.phoneshopapp.repositories.SimpleFirebaseAddressRepository();
+        try {
+            // Use simple Firebase implementation instead of null
+            Log.d(TAG, "Initializing SimpleFirebaseAddressRepository");
+            this.addressRepository = new com.example.phoneshopapp.repositories.SimpleFirebaseAddressRepository();
+            Log.d(TAG, "SimpleFirebaseAddressRepository initialized successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to initialize SimpleFirebaseAddressRepository", e);
+            throw new RuntimeException("Failed to initialize AddressRepository", e);
+        }
     }
 
     public static synchronized AddressManager getInstance(Context context) {
