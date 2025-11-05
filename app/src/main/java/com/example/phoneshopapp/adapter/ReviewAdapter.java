@@ -42,12 +42,34 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         
         holder.textUserName.setText(review.getUserName());
         holder.textComment.setText(review.getComment());
-        holder.textDate.setText(dateFormat.format(review.getDate()));
+        
+        // Format date
+        if (review.getDate() != null) {
+            holder.textDate.setText(dateFormat.format(review.getDate()));
+        } else {
+            holder.textDate.setVisibility(View.GONE);
+        }
         
         // Update star display based on rating
         updateStarDisplay(holder, review.getRating());
         
-        // Set avatar (you can load from URL later)
+        // Show variant info if available
+        String variantInfo = review.getFormattedVariantInfo();
+        if (variantInfo != null && !variantInfo.isEmpty()) {
+            holder.layoutVariantInfo.setVisibility(View.VISIBLE);
+            holder.textVariantInfo.setText(variantInfo);
+        } else {
+            holder.layoutVariantInfo.setVisibility(View.GONE);
+        }
+        
+        // Show verified purchase badge if verified
+        if (review.isVerifiedPurchase()) {
+            holder.layoutVerifiedBadge.setVisibility(View.VISIBLE);
+        } else {
+            holder.layoutVerifiedBadge.setVisibility(View.GONE);
+        }
+        
+        // Set avatar (you can load from URL later with Glide)
         holder.imageAvatar.setImageResource(R.drawable.ic_person_24);
     }
 
@@ -78,6 +100,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         TextView textUserName;
         TextView textComment;
         TextView textDate;
+        View layoutVariantInfo;
+        TextView textVariantInfo;
+        View layoutVerifiedBadge;
+        TextView textVerified;
         ImageView star1, star2, star3, star4, star5;
 
         public ReviewViewHolder(@NonNull View itemView) {
@@ -86,6 +112,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             textUserName = itemView.findViewById(R.id.textUserName);
             textComment = itemView.findViewById(R.id.textComment);
             textDate = itemView.findViewById(R.id.textReviewDate);
+            layoutVariantInfo = itemView.findViewById(R.id.layoutVariantInfo);
+            textVariantInfo = itemView.findViewById(R.id.textVariantInfo);
+            layoutVerifiedBadge = itemView.findViewById(R.id.layoutVerifiedBadge);
+            textVerified = itemView.findViewById(R.id.textVerified);
             star1 = itemView.findViewById(R.id.star1);
             star2 = itemView.findViewById(R.id.star2);
             star3 = itemView.findViewById(R.id.star3);

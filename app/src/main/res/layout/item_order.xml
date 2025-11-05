@@ -101,6 +101,18 @@
 
         </LinearLayout>
 
+        <!-- Review Button - Only visible for DELIVERED orders that haven't been reviewed -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Đánh giá sản phẩm"
+            android:visibility="gone"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:icon="@android:drawable/star_big_on"
+            app:iconGravity="textStart" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

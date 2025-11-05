@@ -23,6 +23,10 @@ public class Product {
 
     // Variant flag (hasVariants field from Firebase)
     private boolean hasVariants;
+    
+    // Review fields
+    private float averageRating = 0.0f;  // Rating trung bình
+    private int totalReviews = 0;        // Tổng số đánh giá
 
     // Constructor mặc định (Firebase yêu cầu)
     public Product() {
@@ -231,5 +235,30 @@ public class Product {
 
     public void setHasVariants(boolean hasVariants) {
         this.hasVariants = hasVariants;
+    }
+
+    public float getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(float averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public int getTotalReviews() {
+        return totalReviews;
+    }
+
+    public void setTotalReviews(int totalReviews) {
+        this.totalReviews = totalReviews;
+    }
+
+    // Helper methods for reviews
+    public String getFormattedRating() {
+        return String.format("%.1f", averageRating);
+    }
+
+    public boolean hasReviews() {
+        return totalReviews > 0;
     }
 }

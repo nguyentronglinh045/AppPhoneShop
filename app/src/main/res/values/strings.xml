@@ -28,4 +28,39 @@
         <item>1TB</item>
         <item>2TB</item>
     </string-array>
+    
+    <!-- Review Feature Strings -->
+    <string name="title_product_review">Đánh giá sản phẩm</string>
+    <string name="label_your_rating">Đánh giá của bạn</string>
+    <string name="hint_review_comment">Chia sẻ trải nghiệm của bạn về sản phẩm...</string>
+    <string name="btn_submit_review">Gửi đánh giá</string>
+    <string name="btn_add_images">Chọn ảnh</string>
+    <string name="label_add_images">Thêm ảnh (tùy chọn)</string>
+    <string name="label_purchased_variant">Đã mua: %s</string>
+    <string name="label_verified_purchase">✓ Đã mua hàng</string>
+    
+    <!-- Review Validation -->
+    <string name="error_rating_required">Vui lòng chọn số sao đánh giá</string>
+    <string name="error_comment_required">Vui lòng nhập nhận xét</string>
+    <string name="error_comment_too_short">Nhận xét quá ngắn (tối thiểu 10 ký tự)</string>
+    <string name="error_comment_too_long">Nhận xét quá dài (tối đa 500 ký tự)</string>
+    
+    <!-- Review Success/Error -->
+    <string name="success_review_submitted">Đánh giá đã được gửi thành công!</string>
+    <string name="error_review_failed">Không thể gửi đánh giá. Vui lòng thử lại.</string>
+    <string name="error_already_reviewed">Đơn hàng này đã được đánh giá rồi</string>
+    <string name="error_review_not_eligible">Bạn chưa mua sản phẩm này</string>
+    <string name="error_order_already_reviewed">Đơn hàng này đã được đánh giá rồi</string>
+    
+    <!-- Review Display -->
+    <string name="text_no_reviews">Chưa có đánh giá nào</string>
+    <string name="text_be_first_reviewer">Hãy là người đầu tiên đánh giá sản phẩm này!</string>
+    <string name="text_review_count">%d đánh giá</string>
+    <string name="text_average_rating">%.1f</string>
+    
+    <!-- Button Labels -->
+    <string name="btn_write_review">Viết đánh giá</string>
+    <string name="btn_review_order">Đánh giá</string>
+    <string name="btn_select_product">Chọn sản phẩm đánh giá</string>
+    <string name="btn_reviewed">Đã đánh giá</string>
 </resources>

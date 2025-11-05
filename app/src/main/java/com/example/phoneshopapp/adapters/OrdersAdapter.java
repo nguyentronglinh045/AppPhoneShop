@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.phoneshopapp.R;
 import com.example.phoneshopapp.models.Order;
 import com.example.phoneshopapp.models.OrderStatus;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
 import java.text.SimpleDateFormat;
@@ -23,6 +24,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
     public interface OnOrderClickListener {
         void onOrderClick(Order order);
+        void onReviewClick(Order order);  // Thêm method cho review
     }
 
     public OrdersAdapter(OnOrderClickListener listener) {
@@ -63,6 +65,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
         private MaterialTextView textOrderStatus;
         private MaterialTextView textTotalAmount;
         private MaterialTextView textItemCount;
+        private MaterialButton btnReview;  // Thêm button review
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +75,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
             textOrderStatus = itemView.findViewById(R.id.textOrderStatus);
             textTotalAmount = itemView.findViewById(R.id.textTotalAmount);
             textItemCount = itemView.findViewById(R.id.textItemCount);
+            btnReview = itemView.findViewById(R.id.btnReview);  // Init button
         }
 
         public void bind(Order order, OnOrderClickListener listener) {
@@ -98,6 +102,41 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
                     listener.onOrderClick(order);
                 }
             });
+
+            // Handle Review button visibility and click
+            handleReviewButton(order, listener);
+        }
+
+        /**
+         * Handle Review button visibility and click logic
+         * QUAN TRỌNG: 
+         * - Chỉ hiển thị khi OrderStatus = DELIVERED
+         * - Ẩn nút nếu order.hasReview = true (đã đánh giá rồi)
+         */
+        private void handleReviewButton(Order order, OnOrderClickListener listener) {
+            // Kiểm tra điều kiện hiển thị nút Review
+            if (order.getOrderStatus() == OrderStatus.DELIVERED) {
+                // Đơn hàng đã giao - check hasReview
+                if (order.isHasReview()) {
+                    // Đã review rồi - ẩn nút
+                    btnReview.setVisibility(View.GONE);
+                } else {
+                    // Chưa review - hiển thị nút
+                    btnReview.setVisibility(View.VISIBLE);
+                    btnReview.setEnabled(true);
+                    btnReview.setText("Đánh giá sản phẩm");
+                    
+                    // Set click listener
+                    btnReview.setOnClickListener(v -> {
+                        if (listener != null) {
+                            listener.onReviewClick(order);
+                        }
+                    });
+                }
+            } else {
+                // Đơn hàng chưa giao - ẩn nút
+                btnReview.setVisibility(View.GONE);
+            }
         }
 
         private void setStatusColor(MaterialTextView textView, OrderStatus status) {

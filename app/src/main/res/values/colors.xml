@@ -57,4 +57,10 @@
     <color name="variant_storage_border_default">#E0E0E0</color>
     <color name="variant_storage_border_selected">@color/primary</color>
     <color name="variant_storage_bg_selected">#E8F5E9</color>
+    
+    <!-- Review Feature Colors -->
+    <color name="rating_star">#FFB800</color>
+    <color name="review_background">#F5F5F5</color>
+    <color name="verified_badge_bg">#E8F5E9</color>
+    <color name="verified_badge_text">#4CAF50</color>
 </resources>

@@ -22,6 +22,8 @@ import com.example.phoneshopapp.data.variant.VariantRepository;
 import com.example.phoneshopapp.model.Review;
 import com.example.phoneshopapp.models.CartItem;
 import com.example.phoneshopapp.models.ProductVariant;
+import com.example.phoneshopapp.managers.ReviewManager;
+import com.example.phoneshopapp.repositories.callbacks.ReviewListCallback;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import java.util.ArrayList;
@@ -67,6 +69,7 @@ public class ProductDetailActivity extends AppCompatActivity {
   private Product product;
   private ProductManager productManager;
   private CartManager cartManager;
+  private ReviewManager reviewManager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     // Initialize cart manager
     cartManager = CartManager.getInstance();
     cartManager.initialize(this);
+
+    // Initialize review manager
+    reviewManager = ReviewManager.getInstance(this);
 
     // Load product data
     loadProductData();
@@ -250,6 +256,9 @@ public class ProductDetailActivity extends AppCompatActivity {
       Log.d("ProductDetail", "Product has no variants");
       layoutVariantSection.setVisibility(android.view.View.GONE);
     }
+
+    // Load reviews from Firebase
+    loadRealReviews();
   }
 
   private void loadProductVariants() {
@@ -498,8 +507,12 @@ public class ProductDetailActivity extends AppCompatActivity {
       });
     });
 
-    // Write Review button
-    buttonWriteReview.setOnClickListener(v -> showWriteReviewDialog());
+    // Write Review button - DISABLED: Users must review through MyOrders only
+    // User can only review after order is DELIVERED
+    buttonWriteReview.setVisibility(android.view.View.GONE);
+    // Alternative: show but disable
+    // buttonWriteReview.setEnabled(false);
+    // buttonWriteReview.setText("Mua hàng để đánh giá");
   }
 
   private void setupReviewRecyclerView() {
@@ -507,9 +520,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     reviewAdapter = new ReviewAdapter(this, reviewList);
     recyclerViewReviews.setLayoutManager(new LinearLayoutManager(this));
     recyclerViewReviews.setAdapter(reviewAdapter);
-
-    // Load sample reviews for demo
-    loadSampleReviews();
   }
 
   private void setupVariantRecyclerViews() {
@@ -533,20 +543,83 @@ public class ProductDetailActivity extends AppCompatActivity {
     recyclerStorageVariants.setAdapter(storageAdapter);
   }
 
-  private void loadSampleReviews() {
-    // Sample reviews for demonstration
-    reviewList.clear();
+  /**
+   * Load reviews from Firebase for the current product
+   * Replaces loadSampleReviews() - now using real data
+   */
+  private void loadRealReviews() {
+    if (product == null || product.getId() == null) {
+      Log.w("ProductDetail", "Cannot load reviews: product or product ID is null");
+      return;
+    }
 
-    Review review1 = new Review("user1", "Nguyễn Văn A", "product1", 5.0f, "Sản phẩm rất tốt, chất lượng cao!");
-    Review review2 = new Review("user2", "Trần Thị B", "product1", 4.0f, "Đẹp và tiện dụng, giao hàng nhanh.");
-    Review review3 = new Review("user3", "Lê Văn C", "product1", 4.5f, "Giá hợp lý, sẽ mua lại lần sau.");
+    String productId = product.getId();
+    Log.d("ProductDetail", "========== LOADING REVIEWS ==========");
+    Log.d("ProductDetail", "Product ID: " + productId);
+    Log.d("ProductDetail", "Product Name: " + product.getName());
 
-    reviewList.add(review1);
-    reviewList.add(review2);
-    reviewList.add(review3);
+    reviewManager.loadProductReviews(productId, new ReviewListCallback() {
+      @Override
+      public void onSuccess(List<com.example.phoneshopapp.models.Review> reviews) {
+        Log.d("ProductDetail", "✅ Reviews loaded successfully from Firebase");
+        Log.d("ProductDetail", "Total reviews received: " + reviews.size());
+        
+        runOnUiThread(() -> {
+          reviewList.clear();
+          
+          // Log each review for debugging
+          for (int i = 0; i < reviews.size(); i++) {
+            com.example.phoneshopapp.models.Review modelReview = reviews.get(i);
+            Log.d("ProductDetail", String.format("Review #%d: user=%s, rating=%.1f, comment=%s", 
+              i + 1, 
+              modelReview.getUserName(), 
+              modelReview.getRating(), 
+              modelReview.getComment()));
+          }
+          
+          // Convert from models.Review to model.Review if needed
+          for (com.example.phoneshopapp.models.Review modelReview : reviews) {
+            // Map to the Review class used by adapter
+            Review adapterReview = new Review(
+              modelReview.getUserId(),
+              modelReview.getUserName(),
+              modelReview.getProductId(),
+              modelReview.getRating(),
+              modelReview.getComment()
+            );
+            
+            // Set additional fields
+            adapterReview.setDate(modelReview.getCreatedAt());
+            adapterReview.setVariantName(modelReview.getVariantName());
+            adapterReview.setVariantColor(modelReview.getVariantColor());
+            adapterReview.setVariantRam(modelReview.getVariantRam());
+            adapterReview.setVariantStorage(modelReview.getVariantStorage());
+            adapterReview.setVerifiedPurchase(modelReview.isVerifiedPurchase());
+            
+            reviewList.add(adapterReview);
+          }
+          
+          Log.d("ProductDetail", "Converted to adapter reviews: " + reviewList.size());
+          updateReviewSummary();
+          updateReviewsDisplay();
+          Log.d("ProductDetail", "========== REVIEWS DISPLAY UPDATED ==========");
+        });
+      }
 
-    updateReviewSummary();
-    updateReviewsDisplay();
+      @Override
+      public void onError(String error) {
+        Log.e("ProductDetail", "❌ Failed to load reviews: " + error);
+        Log.e("ProductDetail", "Error details: " + error);
+        runOnUiThread(() -> {
+          reviewList.clear();
+          updateReviewSummary();
+          updateReviewsDisplay();
+          Toast.makeText(ProductDetailActivity.this, 
+            "Không thể tải đánh giá: " + error, 
+            Toast.LENGTH_SHORT).show();
+        });
+      }
+    });
   }
 
   private void updateReviewSummary() {
@@ -557,16 +630,30 @@ public class ProductDetailActivity extends AppCompatActivity {
       return;
     }
 
-    // Calculate average rating
-    float totalRating = 0;
-    for (Review review : reviewList) {
-      totalRating += review.getRating();
-    }
-    float averageRating = totalRating / reviewList.size();
+    // Calculate average rating using ReviewManager
+    float averageRating = reviewManager.calculateAverageRating(convertToModelReviews(reviewList));
 
     textAverageRating.setText(String.format("%.1f", averageRating));
     textReviewCount.setText(String.format("(%d đánh giá)", reviewList.size()));
     ratingBarAverage.setRating(averageRating);
+  }
+
+  /**
+   * Helper method to convert adapter Review list to models.Review list
+   * Needed for ReviewManager methods
+   */
+  private List<com.example.phoneshopapp.models.Review> convertToModelReviews(List<Review> adapterReviews) {
+    List<com.example.phoneshopapp.models.Review> modelReviews = new ArrayList<>();
+    for (Review adapterReview : adapterReviews) {
+      com.example.phoneshopapp.models.Review modelReview = new com.example.phoneshopapp.models.Review();
+      modelReview.setUserId(adapterReview.getUserId());
+      modelReview.setUserName(adapterReview.getUserName());
+      modelReview.setProductId(adapterReview.getProductId());
+      modelReview.setRating(adapterReview.getRating());
+      modelReview.setComment(adapterReview.getComment());
+      modelReviews.add(modelReview);
+    }
+    return modelReviews;
   }
 
   private void updateReviewsDisplay() {

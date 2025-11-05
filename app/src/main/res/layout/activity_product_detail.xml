@@ -453,17 +453,22 @@
                     android:id="@+id/recyclerViewReviews"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false" />
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp" />
 
                 <TextView
                     android:id="@+id/textEmptyReviews"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Chưa có đánh giá nào"
-                    android:textColor="@android:color/darker_gray"
+                    android:text="Chưa có đánh giá nào cho sản phẩm này.\nHãy là người đầu tiên đánh giá!"
+                    android:textColor="#9E9E9E"
                     android:textSize="14sp"
                     android:gravity="center"
-                    android:padding="24dp"
+                    android:padding="32dp"
+                    android:drawableTop="@drawable/ic_rate_review"
+                    android:drawablePadding="12dp"
                     android:visibility="gone" />
 
             </LinearLayout>

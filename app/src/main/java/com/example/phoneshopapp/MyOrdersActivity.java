@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.phoneshopapp.adapters.OrdersAdapter;
 import com.example.phoneshopapp.managers.OrderManager;
+import com.example.phoneshopapp.managers.ReviewManager;
 import com.example.phoneshopapp.models.Order;
 import com.example.phoneshopapp.models.OrderStatus;
+import com.example.phoneshopapp.repositories.callbacks.BooleanCallback;
 import com.example.phoneshopapp.repositories.callbacks.OrderListCallback;
 import com.example.phoneshopapp.UserManager;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -32,6 +35,7 @@ public class MyOrdersActivity extends AppCompatActivity implements OrdersAdapter
     private List<Order> allOrders = new ArrayList<>();
     private OrderStatus currentFilter = null; // null means "All"
     private OrderManager orderManager;
+    private ReviewManager reviewManager;  // Thêm ReviewManager
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,7 @@ public class MyOrdersActivity extends AppCompatActivity implements OrdersAdapter
 
         // Initialize managers
         orderManager = OrderManager.getInstance(this);
+        reviewManager = ReviewManager.getInstance(this);  // Init ReviewManager
 
         initViews();
         setupToolbar();
@@ -253,6 +258,89 @@ public class MyOrdersActivity extends AppCompatActivity implements OrdersAdapter
         // Navigate to order detail
         Intent intent = new Intent(this, OrderDetailActivity.class);
         intent.putExtra("order_id", order.getOrderId());
+        startActivity(intent);
+    }
+
+    /**
+     * Handle review button click
+     * QUAN TRỌNG: Kiểm tra đơn hàng đã review chưa trước khi navigate
+     */
+    @Override
+    public void onReviewClick(Order order) {
+        // Kiểm tra đơn hàng đã review chưa
+        reviewManager.checkCanReview(order.getOrderId(), new BooleanCallback() {
+            @Override
+            public void onResult(boolean canReview) {
+                if (!canReview) {
+                    // Đã review rồi
+                    Toast.makeText(MyOrdersActivity.this,
+                            "Đơn hàng này đã được đánh giá rồi",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Chưa review, cho phép đánh giá
+                // Navigate đến màn hình đánh giá
+                navigateToReviewScreen(order);
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(MyOrdersActivity.this,
+                        "Lỗi: " + error,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Navigate to review screen
+     * Handle case: 1 sản phẩm vs nhiều sản phẩm
+     */
+    private void navigateToReviewScreen(Order order) {
+        if (order.getItems() == null || order.getItems().isEmpty()) {
+            Toast.makeText(this, "Đơn hàng không có sản phẩm", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // TODO: Nếu order có nhiều sản phẩm, show dialog chọn
+        // Hiện tại: Chỉ support 1 sản phẩm, lấy item đầu tiên
+        if (order.getItems().size() == 1) {
+            com.example.phoneshopapp.models.OrderItem item = order.getItems().get(0);
+            openReviewActivity(order.getOrderId(), item);
+        } else {
+            // TODO Phase 2: Show dialog để user chọn sản phẩm muốn đánh giá
+            // Tạm thời: Lấy sản phẩm đầu tiên
+            com.example.phoneshopapp.models.OrderItem item = order.getItems().get(0);
+            openReviewActivity(order.getOrderId(), item);
+            
+            Toast.makeText(this, 
+                    "Đơn hàng có nhiều sản phẩm. Đang đánh giá sản phẩm đầu tiên.", 
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Open ProductReviewActivity với thông tin đầy đủ
+     */
+    private void openReviewActivity(String orderId, com.example.phoneshopapp.models.OrderItem item) {
+        Intent intent = new Intent(this, ProductReviewActivity.class);
+        
+        // Pass order info
+        intent.putExtra("order_id", orderId);
+        
+        // Pass product info
+        intent.putExtra("product_id", item.getProductId());
+        intent.putExtra("product_name", item.getProductName());
+        intent.putExtra("product_image", item.getImageUrl());
+        
+        // Pass variant info (QUAN TRỌNG)
+        intent.putExtra("variant_id", item.getVariantId());
+        intent.putExtra("variant_name", item.getVariantName());
+        intent.putExtra("variant_color", item.getVariantColor());
+        intent.putExtra("variant_ram", item.getVariantRam());
+        intent.putExtra("variant_storage", item.getVariantStorage());
+        
         startActivity(intent);
     }
 

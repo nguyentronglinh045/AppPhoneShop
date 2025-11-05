@@ -68,6 +68,11 @@
             android:parentActivityName=".MainActivity">
         </activity>
         <activity
+            android:name=".ProductReviewActivity"
+            android:exported="false"
+            android:parentActivityName=".MyOrdersActivity">
+        </activity>
+        <activity
             android:name=".RegisterActivity"
             android:exported="false">
         </activity>

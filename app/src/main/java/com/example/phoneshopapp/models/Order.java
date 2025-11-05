@@ -15,6 +15,10 @@ public class Order {
     private Date createdAt;
     private Date updatedAt;
     private Date estimatedDelivery;
+    
+    // Review fields
+    private boolean hasReview = false;  // Đơn hàng đã được đánh giá chưa
+    private String reviewId;            // ID của review (nếu có) - optional
 
     public Order() {
         // Default constructor required for calls to DataSnapshot.getValue(Order.class)
@@ -66,6 +70,12 @@ public class Order {
 
     public Date getEstimatedDelivery() { return estimatedDelivery; }
     public void setEstimatedDelivery(Date estimatedDelivery) { this.estimatedDelivery = estimatedDelivery; }
+
+    public boolean isHasReview() { return hasReview; }
+    public void setHasReview(boolean hasReview) { this.hasReview = hasReview; }
+
+    public String getReviewId() { return reviewId; }
+    public void setReviewId(String reviewId) { this.reviewId = reviewId; }
 
     // Helper methods
     public String getFormattedOrderId() {
