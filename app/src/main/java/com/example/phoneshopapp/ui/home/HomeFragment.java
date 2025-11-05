@@ -26,6 +26,12 @@ import com.example.phoneshopapp.ProductGridAdapter;
 import com.example.phoneshopapp.ProductManager;
 import com.example.phoneshopapp.R;
 import com.example.phoneshopapp.adapters.BannerAdapter;
+import com.example.phoneshopapp.SearchActivity;
+import android.content.Intent;
+
+import android.widget.ImageView;
+import android.graphics.PorterDuff;
+
 import com.example.phoneshopapp.databinding.FragmentHomeBinding;
 import com.example.phoneshopapp.models.Banner;
 
@@ -69,6 +75,24 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
         setupBannerSlider(root);
         
+        binding.homeSearchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                intent.putExtra("search_query", query);
+                startActivity(intent);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        ImageView searchIcon = binding.homeSearchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
+        searchIcon.setColorFilter(getResources().getColor(R.color.text_secondary), android.graphics.PorterDuff.Mode.SRC_IN);
+
         // Categories RecyclerView
         categoryAdapter = new CategoryAdapter(new ArrayList<>());
         binding.recyclerCategories.setLayoutManager(
