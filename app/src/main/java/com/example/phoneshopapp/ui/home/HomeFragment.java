@@ -34,6 +34,7 @@ import android.graphics.PorterDuff;
 
 import com.example.phoneshopapp.databinding.FragmentHomeBinding;
 import com.example.phoneshopapp.models.Banner;
+import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,25 @@ public class HomeFragment extends Fragment {
 
         // Categories RecyclerView
         categoryAdapter = new CategoryAdapter(new ArrayList<>());
+        categoryAdapter.setOnCategoryClickListener(category -> {
+            Log.d(TAG, "📂 Category clicked: " + category.getName());
+            
+            // Navigate to Categories (Dashboard) fragment with selected category
+            Bundle bundle = new Bundle();
+            bundle.putString("CATEGORY_FILTER", category.getName());
+            
+            try {
+                Navigation.findNavController(root).navigate(R.id.navigation_categories, bundle);
+                Toast.makeText(getContext(), 
+                    "Đang lọc theo: " + category.getName(), 
+                    Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Log.e(TAG, "Navigation error: " + e.getMessage());
+                Toast.makeText(getContext(), 
+                    "Không thể chuyển trang", 
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
         binding.recyclerCategories.setLayoutManager(
                 new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.recyclerCategories.setAdapter(categoryAdapter);

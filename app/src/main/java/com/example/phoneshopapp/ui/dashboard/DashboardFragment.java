@@ -63,6 +63,21 @@ public class DashboardFragment extends Fragment {
         setupRecyclerView();
         setupClickListeners();
         observeViewModel();
+        
+        // Check if a category filter was passed from HomeFragment
+        if (getArguments() != null) {
+            String categoryFilter = getArguments().getString("CATEGORY_FILTER");
+            if (categoryFilter != null) {
+                android.util.Log.d("DashboardFragment", "📂 Received category filter: " + categoryFilter);
+                // Set the category filter after a small delay to ensure data is loaded
+                binding.getRoot().postDelayed(() -> {
+                    viewModel.setSelectedCategory(categoryFilter);
+                    Toast.makeText(getContext(), 
+                        "Lọc theo: " + categoryFilter, 
+                        Toast.LENGTH_SHORT).show();
+                }, 300);
+            }
+        }
 
         return root;
     }

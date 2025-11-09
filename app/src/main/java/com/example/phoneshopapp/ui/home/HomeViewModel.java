@@ -49,13 +49,58 @@ public class HomeViewModel extends ViewModel {
     }
 
     private void loadCategories() {
-        List<Category> categoryList = new ArrayList<>();
-        categoryList.add(new Category("Premium Smartphones", R.drawable.ic_home_black_24dp));
-        categoryList.add(new Category("Tablets & iPads", R.drawable.ic_dashboard_black_24dp));
-        categoryList.add(new Category("Phone Accessories", R.drawable.ic_notifications_black_24dp));
-        categoryList.add(new Category("Smart Watches", R.drawable.ic_home_black_24dp));
-        categoryList.add(new Category("Audio & Headphones", R.drawable.ic_dashboard_black_24dp));
-        categories.setValue(categoryList);
+        // Load categories dynamically from products
+        productManager.loadProductsFromFirebase(new ProductManager.OnProductsLoadedListener() {
+            @Override
+            public void onSuccess(List<Product> products) {
+                // Extract unique categories from products
+                List<Category> categoryList = new ArrayList<>();
+                List<String> uniqueCategories = new ArrayList<>();
+                
+                for (Product product : products) {
+                    String category = product.getCategory();
+                    if (category != null && !category.isEmpty() && !uniqueCategories.contains(category)) {
+                        uniqueCategories.add(category);
+                        // Map category names to appropriate icons
+                        int iconRes = getCategoryIcon(category);
+                        categoryList.add(new Category(category, iconRes));
+                    }
+                }
+                
+                Log.d(TAG, "📂 Loaded " + categoryList.size() + " categories from products");
+                categories.setValue(categoryList);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "Failed to load categories: " + e.getMessage());
+                // Fallback to empty list
+                categories.setValue(new ArrayList<>());
+            }
+        });
+    }
+    
+    /**
+     * Map category names to appropriate icons
+     */
+    private int getCategoryIcon(String category) {
+        if (category == null) return R.drawable.ic_home_black_24dp;
+        
+        String lowerCategory = category.toLowerCase();
+        
+        if (lowerCategory.contains("phone") || lowerCategory.contains("smartphone")) {
+            return R.drawable.ic_home_black_24dp;
+        } else if (lowerCategory.contains("tablet") || lowerCategory.contains("ipad")) {
+            return R.drawable.ic_dashboard_black_24dp;
+        } else if (lowerCategory.contains("accessory") || lowerCategory.contains("accessories")) {
+            return R.drawable.ic_notifications_black_24dp;
+        } else if (lowerCategory.contains("watch")) {
+            return R.drawable.ic_home_black_24dp;
+        } else if (lowerCategory.contains("audio") || lowerCategory.contains("headphone")) {
+            return R.drawable.ic_dashboard_black_24dp;
+        } else {
+            return R.drawable.ic_notifications_black_24dp; // Default icon
+        }
     }
 
     // Kiểm tra cache có còn valid không
