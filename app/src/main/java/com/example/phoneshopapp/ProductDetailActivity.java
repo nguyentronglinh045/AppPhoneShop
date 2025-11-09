@@ -1,6 +1,7 @@
 package com.example.phoneshopapp;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -488,11 +489,16 @@ public class ProductDetailActivity extends AppCompatActivity {
         @Override
         public void onSuccess(String message) {
           runOnUiThread(() -> {
-            Toast.makeText(ProductDetailActivity.this, "Đã thêm vào giỏ hàng. Chuyển đến thanh toán...",
+            Toast.makeText(ProductDetailActivity.this, "Đã thêm vào giỏ hàng",
                 Toast.LENGTH_SHORT).show();
             btnBuyNow.setEnabled(true);
             btnBuyNow.setText("Buy Now");
-            // TODO: Navigate to checkout/cart activity
+            
+            // Navigate to CartActivity with auto-selection info via Intent
+            Intent cartIntent = new Intent(ProductDetailActivity.this, CartActivity.class);
+            cartIntent.putExtra("AUTO_SELECT_PRODUCT_ID", product.getId());
+            cartIntent.putExtra("AUTO_SELECT_VARIANT_ID", selectedVariant != null ? selectedVariant.getVariantId() : "");
+            startActivity(cartIntent);
           });
         }
 

@@ -23,6 +23,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     void onQuantityChanged(CartItem item, int newQuantity);
 
     void onItemRemoved(CartItem item);
+
+    void onItemSelectionChanged(CartItem item, boolean isSelected);
   }
 
   public CartAdapter(OnCartItemActionListener listener) {
@@ -63,6 +65,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
   }
 
   class CartViewHolder extends RecyclerView.ViewHolder {
+    private com.google.android.material.checkbox.MaterialCheckBox checkboxSelectItem;
     private ImageView imageProduct;
     private TextView textProductName, textProductCategory, textProductPrice;
     private TextView textQuantity, textTotalPrice;
@@ -76,6 +79,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     public CartViewHolder(@NonNull View itemView) {
       super(itemView);
 
+      checkboxSelectItem = itemView.findViewById(R.id.checkboxSelectItem);
       imageProduct = itemView.findViewById(R.id.imageCartProduct);
       textProductName = itemView.findViewById(R.id.textCartProductName);
       textProductCategory = itemView.findViewById(R.id.textCartProductCategory);
@@ -93,6 +97,20 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     }
 
     public void bind(CartItem item) {
+      // Bind checkbox selection state
+      checkboxSelectItem.setOnCheckedChangeListener(null); // Remove old listener
+      checkboxSelectItem.setChecked(item.isSelected());
+      
+      // Handle checkbox selection change
+      checkboxSelectItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        if (buttonView.isPressed()) { // Only handle user interaction, not programmatic changes
+          item.setSelected(isChecked);
+          if (listener != null) {
+            listener.onItemSelectionChanged(item, isChecked);
+          }
+        }
+      });
+
       // Set product info
       textProductName.setText(item.getProductName());
       textProductCategory.setText(item.getProductCategory());

@@ -179,15 +179,38 @@ public class CheckoutActivity extends AppCompatActivity {
         cartManager = CartManager.getInstance();
         cartManager.initialize(this);
 
-        // Load real cart data instead of mock
-        cartItems = cartManager.getCartItems();
+        // Get selected item IDs from Intent
+        Intent intent = getIntent();
+        ArrayList<String> selectedItemIds = null;
+        if (intent != null) {
+            selectedItemIds = intent.getStringArrayListExtra("SELECTED_ITEM_IDS");
+        }
+
+        if (selectedItemIds == null || selectedItemIds.isEmpty()) {
+            android.util.Log.w("CheckoutActivity", "No selected items in Intent, fallback to getSelectedItems()");
+            // Fallback: try to get selected items from CartManager (may not work if session lost)
+            cartItems = cartManager.getSelectedItems();
+        } else {
+            android.util.Log.d("CheckoutActivity", "Loading " + selectedItemIds.size() + " items from Intent");
+            // Filter cart items by IDs passed from CartActivity
+            List<CartItem> allCartItems = cartManager.getCartItems();
+            cartItems = new ArrayList<>();
+            for (CartItem item : allCartItems) {
+                if (item.getId() != null && selectedItemIds.contains(item.getId())) {
+                    cartItems.add(item);
+                    android.util.Log.d("CheckoutActivity", "  Added item: " + item.getProductName() + " (id=" + item.getId() + ")");
+                }
+            }
+        }
 
         if (cartItems.isEmpty()) {
-            Toast.makeText(this, "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng chọn sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
+            android.util.Log.e("CheckoutActivity", "No cart items to checkout!");
             finish();
             return;
         }
 
+        android.util.Log.d("CheckoutActivity", "✅ Loaded " + cartItems.size() + " items for checkout");
         checkoutAdapter.updateItems(convertCartItemsToOrderItems(cartItems));
         updatePricingSummary();
     }
@@ -303,8 +326,8 @@ public class CheckoutActivity extends AppCompatActivity {
         CustomerInfo customerInfo = createCustomerInfoFromForm();
         String note = editTextNote.getText() != null ? editTextNote.getText().toString().trim() : "";
 
-        // Create order using OrderManager
-        orderManager.createOrderFromCart(customerInfo, selectedPaymentMethod, note, new OrderCreationCallback() {
+        // Create order using OrderManager - pass cartItems explicitly
+        orderManager.createOrderFromCart(cartItems, customerInfo, selectedPaymentMethod, note, new OrderCreationCallback() {
             @Override
             public void onSuccess(Order order) {
                 runOnUiThread(() -> {
@@ -392,9 +415,9 @@ public class CheckoutActivity extends AppCompatActivity {
             return false;
         }
 
-        // Validate cart
+        // Validate cart - must have selected items
         if (cartItems == null || cartItems.isEmpty()) {
-            Toast.makeText(this, "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không có sản phẩm nào được chọn", Toast.LENGTH_SHORT).show();
             return false;
         }
 

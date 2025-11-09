@@ -81,6 +81,36 @@
 
             </LinearLayout>
 
+            <!-- Select All Header (Shopee style) -->
+            <LinearLayout
+                android:id="@+id/layoutSelectAll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical"
+                android:background="@android:color/white"
+                android:visibility="gone">
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxSelectAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chọn tất cả (0)"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:id="@+id/dividerSelectAll"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:visibility="gone" />
+
             <!-- Cart items RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewCart"

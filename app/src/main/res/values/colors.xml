@@ -28,6 +28,7 @@
     
     <!-- Border/Stroke Colors -->
     <color name="stroke_light">#E0E0E0</color>
+    <color name="divider">#E0E0E0</color>
     
     <!-- Social Media Colors -->
     <color name="facebook">#1877F2</color>

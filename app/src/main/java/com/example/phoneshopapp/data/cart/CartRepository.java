@@ -347,4 +347,43 @@ public class CartRepository {
         })
         .addOnFailureListener(listener::onFailure);
   }
+
+  /**
+   * Delete multiple cart items at once (for clearing selected items after checkout)
+   * @param cartItemIds List of cart item IDs to delete
+   * @param listener Callback for operation result
+   */
+  public void deleteMultipleItems(List<String> cartItemIds, OnCartOperationListener listener) {
+    if (cartItemIds == null || cartItemIds.isEmpty()) {
+      if (listener != null) {
+        listener.onSuccess();
+      }
+      return;
+    }
+
+    Log.d("CartRepository", "Deleting " + cartItemIds.size() + " cart items");
+
+    List<Task<Void>> deleteTasks = new ArrayList<>();
+
+    for (String itemId : cartItemIds) {
+      Task<Void> deleteTask = db.collection(COLLECTION_CARTS)
+          .document(itemId)
+          .delete();
+      deleteTasks.add(deleteTask);
+    }
+
+    Tasks.whenAll(deleteTasks)
+        .addOnSuccessListener(aVoid -> {
+          Log.d("CartRepository", "Successfully deleted " + cartItemIds.size() + " items");
+          if (listener != null) {
+            listener.onSuccess();
+          }
+        })
+        .addOnFailureListener(e -> {
+          Log.e("CartRepository", "Failed to delete items", e);
+          if (listener != null) {
+            listener.onFailure(e);
+          }
+        });
+  }
 }

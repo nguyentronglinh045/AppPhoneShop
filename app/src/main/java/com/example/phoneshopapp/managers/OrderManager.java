@@ -19,6 +19,7 @@ import com.example.phoneshopapp.repositories.callbacks.OrderCallback;
 import com.example.phoneshopapp.repositories.callbacks.OrdersCallback;
 import com.example.phoneshopapp.repositories.callbacks.UpdateCallback;
 import com.example.phoneshopapp.data.cart.CartManager;
+import com.example.phoneshopapp.data.cart.CartRepository;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,22 +52,22 @@ public class OrderManager {
     }
 
     /**
-     * Create a new order from cart items
+     * Create order from cart items
+     * @param cartItems List of cart items to create order from (pre-filtered)
      * @param customerInfo Customer information
      * @param paymentMethod Selected payment method
      * @param note Order note (optional)
      * @param callback Callback for success/error handling
      */
-    public void createOrderFromCart(CustomerInfo customerInfo, PaymentMethod paymentMethod, 
-                                   String note, OrderCreationCallback callback) {
+    public void createOrderFromCart(List<CartItem> cartItems, CustomerInfo customerInfo, 
+                                   PaymentMethod paymentMethod, String note, OrderCreationCallback callback) {
         
-        CartManager cartManager = CartManager.getInstance();
-        List<CartItem> cartItems = cartManager.getCartItems();
-        
-        if (cartItems.isEmpty()) {
-            callback.onError("Giỏ hàng trống");
+        if (cartItems == null || cartItems.isEmpty()) {
+            callback.onError("Vui lòng chọn sản phẩm để đặt hàng");
             return;
         }
+        
+        Log.d(TAG, "Creating order with " + cartItems.size() + " items");
 
         // Validate customer info
         if (!isValidCustomerInfo(customerInfo)) {
@@ -105,18 +106,29 @@ public class OrderManager {
             public void onSuccess(Order createdOrder) {
                 Log.d(TAG, "Order created successfully: " + createdOrder.getOrderId());
                 
-                // Clear cart after successful order creation
-                cartManager.clearCart(new CartManager.OnCartOperationListener() {
-                    @Override
-                    public void onSuccess(String message) {
-                        Log.d(TAG, "Cart cleared after order creation");
+                // Clear the items that were used for this order
+                CartManager cartManager = CartManager.getInstance();
+                List<String> itemIdsToRemove = new ArrayList<>();
+                for (CartItem item : cartItems) {
+                    if (item.getId() != null) {
+                        itemIdsToRemove.add(item.getId());
                     }
+                }
+                
+                if (!itemIdsToRemove.isEmpty()) {
+                    cartManager.getCartRepository().deleteMultipleItems(itemIdsToRemove, new CartRepository.OnCartOperationListener() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "Cart items cleared after order creation: " + itemIdsToRemove.size() + " items");
+                            cartManager.refreshCart(); // Refresh to update UI
+                        }
 
-                    @Override
-                    public void onFailure(String error) {
-                        Log.w(TAG, "Failed to clear cart: " + error);
-                    }
-                });
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.w(TAG, "Failed to clear cart items: " + e.getMessage());
+                        }
+                    });
+                }
                 
                 callback.onSuccess(createdOrder);
             }

@@ -48,6 +48,13 @@ public class CartManager {
     this.userManager = UserManager.getInstance(context);
     loadCartItems();
   }
+  
+  /**
+   * Get CartRepository instance for direct access
+   */
+  public CartRepository getCartRepository() {
+    return cartRepository;
+  }
 
   // Thêm listener
   public void addCartUpdateListener(CartUpdateListener listener) {
@@ -153,6 +160,7 @@ public class CartManager {
       public void onSuccess() {
         Log.d(TAG, "Add to cart SUCCESS");
         loadCartItems(); // Reload để cập nhật UI
+        
         if (listener != null) {
           listener.onSuccess("Đã thêm " + quantity + " " + product.getName() + " vào giỏ hàng");
         }
@@ -304,4 +312,145 @@ public class CartManager {
   public String getTotalPriceFormatted() {
     return formatPrice(getTotalPrice());
   }
+
+  // ============================================
+  // NEW METHODS FOR SELECTION MANAGEMENT
+  // ============================================
+
+  /**
+   * Get only selected items
+   */
+  public List<CartItem> getSelectedItems() {
+    List<CartItem> selectedItems = new ArrayList<>();
+    for (CartItem item : cartItems) {
+      if (item.isSelected()) {
+        selectedItems.add(item);
+      }
+    }
+    return selectedItems;
+  }
+
+  /**
+   * Get total price of selected items only
+   */
+  public double getTotalPriceOfSelected() {
+    double total = 0.0;
+    for (CartItem item : cartItems) {
+      if (item.isSelected()) {
+        total += item.getTotalPrice();
+      }
+    }
+    return total;
+  }
+
+  /**
+   * Get count of selected items (quantity sum)
+   */
+  public int getSelectedItemCount() {
+    int count = 0;
+    for (CartItem item : cartItems) {
+      if (item.isSelected()) {
+        count += item.getQuantity();
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Get count of unique selected items
+   */
+  public int getUniqueSelectedItemCount() {
+    int count = 0;
+    for (CartItem item : cartItems) {
+      if (item.isSelected()) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  /**
+   * Update item selection state
+   */
+  public void updateItemSelection(String cartItemId, boolean isSelected) {
+    for (CartItem item : cartItems) {
+      if (item.getId() != null && item.getId().equals(cartItemId)) {
+        item.setSelected(isSelected);
+        notifyCartUpdated();
+        break;
+      }
+    }
+  }
+
+  /**
+   * Select all items in cart
+   */
+  public void selectAllItems() {
+    for (CartItem item : cartItems) {
+      item.setSelected(true);
+    }
+    notifyCartUpdated();
+  }
+
+  /**
+   * Deselect all items in cart
+   */
+  public void deselectAllItems() {
+    for (CartItem item : cartItems) {
+      item.setSelected(false);
+    }
+    notifyCartUpdated();
+  }
+
+  /**
+   * Check if all items are selected
+   */
+  public boolean isAllSelected() {
+    if (cartItems.isEmpty()) return false;
+    for (CartItem item : cartItems) {
+      if (!item.isSelected()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+
+  /**
+   * Clear only selected items from cart
+   */
+  public void clearSelectedItems(OnCartOperationListener listener) {
+    List<String> selectedIds = new ArrayList<>();
+    for (CartItem item : cartItems) {
+      if (item.isSelected() && item.getId() != null) {
+        selectedIds.add(item.getId());
+      }
+    }
+
+    if (selectedIds.isEmpty()) {
+      if (listener != null) {
+        listener.onSuccess("Không có sản phẩm nào được chọn");
+      }
+      return;
+    }
+
+    cartRepository.deleteMultipleItems(selectedIds, new CartRepository.OnCartOperationListener() {
+      @Override
+      public void onSuccess() {
+        loadCartItems();
+        if (listener != null) {
+          listener.onSuccess("Đã xóa " + selectedIds.size() + " sản phẩm");
+        }
+      }
+
+      @Override
+      public void onFailure(Exception e) {
+        if (listener != null) {
+          listener.onFailure("Không thể xóa: " + e.getMessage());
+        }
+      }
+    });
+  }
+
 }

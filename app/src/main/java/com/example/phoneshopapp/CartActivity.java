@@ -17,6 +17,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import android.util.Log;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartActivity extends AppCompatActivity implements
@@ -25,12 +26,17 @@ public class CartActivity extends AppCompatActivity implements
 
   private MaterialToolbar toolbar;
   private RecyclerView recyclerViewCart;
-  private LinearLayout emptyCartLayout;
+  private LinearLayout emptyCartLayout, layoutSelectAll;
   private TextView textTotalPrice, textItemCount;
   private MaterialButton btnContinueShopping, btnClearCart, btnCheckout;
+  private com.google.android.material.checkbox.MaterialCheckBox checkboxSelectAll;
+  private android.view.View dividerSelectAll;
 
   private CartAdapter cartAdapter;
   private CartManager cartManager;
+  private boolean isFirstLoad = true; // Flag to track first cart load for auto-selection
+  private String autoSelectProductId = null; // Product ID to auto-select from "Buy Now"
+  private String autoSelectVariantId = null; // Variant ID to auto-select from "Buy Now"
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,17 @@ public class CartActivity extends AppCompatActivity implements
       return;
     }
 
+    // Get auto-selection info from Intent (from "Buy Now" flow)
+    Intent intent = getIntent();
+    if (intent != null) {
+      autoSelectProductId = intent.getStringExtra("AUTO_SELECT_PRODUCT_ID");
+      autoSelectVariantId = intent.getStringExtra("AUTO_SELECT_VARIANT_ID");
+      if (autoSelectProductId != null) {
+        Log.d("CartActivity", "Auto-select requested for product: " + autoSelectProductId + 
+              ", variant: " + (autoSelectVariantId != null ? autoSelectVariantId : "null"));
+      }
+    }
+
     setupRecyclerView();
     setupClickListeners();
 
@@ -63,8 +80,100 @@ public class CartActivity extends AppCompatActivity implements
     cartManager.addCartUpdateListener(this);
 
     Log.d("CartActivity", "CartManager initialized, starting to load cart...");
-    // Load cart data
+    // Load cart data (auto-selection will be handled after cart is loaded)
     cartManager.refreshCart();
+  }
+  
+  /**
+   * Handle auto-selection of last added item (from "Buy Now" button)
+   * This should be called AFTER cart items are loaded AND UI is updated
+   */
+  private void handleAutoSelection() {
+    if (autoSelectProductId == null) {
+      Log.d("CartActivity", "No auto-selection needed (autoSelectProductId is null)");
+      return; // No auto-selection requested
+    }
+    
+    Log.d("CartActivity", "=== AUTO-SELECTION START ===");
+    Log.d("CartActivity", "Searching for item: product=" + autoSelectProductId + 
+          ", variant=" + (autoSelectVariantId != null ? autoSelectVariantId : "null"));
+    
+    // Find the matching cart item by productId and variantId
+    List<CartItem> cartItems = cartManager.getCartItems();
+    Log.d("CartActivity", "Total cart items to search: " + cartItems.size());
+    
+    CartItem itemToSelect = null;
+    java.util.Date latestDate = null;
+    
+    for (CartItem item : cartItems) {
+      Log.d("CartActivity", "Checking item: id=" + item.getId() + 
+            ", productId=" + item.getProductId() + 
+            ", variantId='" + item.getVariantId() + "'" +
+            ", isSelected=" + item.isSelected());
+            
+      boolean matchProduct = item.getProductId() != null && item.getProductId().equals(autoSelectProductId);
+      
+      // Handle both null and empty string cases for variant matching
+      String itemVariantId = item.getVariantId();
+      String targetVariantId = autoSelectVariantId;
+      
+      // Normalize empty string to null for comparison
+      if (itemVariantId != null && itemVariantId.trim().isEmpty()) {
+        itemVariantId = null;
+      }
+      if (targetVariantId != null && targetVariantId.trim().isEmpty()) {
+        targetVariantId = null;
+      }
+      
+      boolean matchVariant;
+      if (targetVariantId == null) {
+        // If target is null, match items with null or empty variantId
+        matchVariant = (itemVariantId == null);
+      } else {
+        // If target is not null, exact match required
+        matchVariant = targetVariantId.equals(itemVariantId);
+      }
+      
+      Log.d("CartActivity", "  matchProduct=" + matchProduct + ", matchVariant=" + matchVariant +
+            " (item='" + itemVariantId + "', target='" + targetVariantId + "')");
+      
+      if (matchProduct && matchVariant) {
+        // Find the newest one (in case multiple items match)
+        if (itemToSelect == null || (item.getAddedAt() != null &&
+            (latestDate == null || item.getAddedAt().after(latestDate)))) {
+          itemToSelect = item;
+          latestDate = item.getAddedAt();
+          Log.d("CartActivity", "  ✓ Selected as candidate (newest so far)");
+        }
+      }
+    }
+    
+    if (itemToSelect != null) {
+      Log.d("CartActivity", "✅ Found item to auto-select: " + itemToSelect.getId());
+      
+      // Set selection directly on the item object
+      itemToSelect.setSelected(true);
+      
+      // Notify adapter to refresh
+      if (cartAdapter != null) {
+        cartAdapter.notifyDataSetChanged();
+        Log.d("CartActivity", "✅ Adapter notified to refresh");
+      }
+      
+      // Also update in CartManager for consistency
+      cartManager.updateItemSelection(itemToSelect.getId(), true);
+      
+      Log.d("CartActivity", "✅ Item selection updated, triggering UI refresh");
+    } else {
+      Log.w("CartActivity", "❌ No matching item found for auto-selection");
+      Log.w("CartActivity", "   Expected: productId=" + autoSelectProductId + 
+            ", variantId=" + autoSelectVariantId);
+    }
+    
+    // Clear the auto-select flags so it doesn't trigger again
+    autoSelectProductId = null;
+    autoSelectVariantId = null;
+    Log.d("CartActivity", "=== AUTO-SELECTION END ===");
   }
 
   @Override
@@ -79,6 +188,9 @@ public class CartActivity extends AppCompatActivity implements
     toolbar = findViewById(R.id.toolbar);
     recyclerViewCart = findViewById(R.id.recyclerViewCart);
     emptyCartLayout = findViewById(R.id.emptyCartLayout);
+    layoutSelectAll = findViewById(R.id.layoutSelectAll);
+    checkboxSelectAll = findViewById(R.id.checkboxSelectAll);
+    dividerSelectAll = findViewById(R.id.dividerSelectAll);
     textTotalPrice = findViewById(R.id.textTotalPrice);
     textItemCount = findViewById(R.id.textItemCount);
     btnContinueShopping = findViewById(R.id.btnContinueShopping);
@@ -119,14 +231,35 @@ public class CartActivity extends AppCompatActivity implements
     });
 
     btnCheckout.setOnClickListener(v -> {
-      if (cartManager.isEmpty()) {
-        Toast.makeText(this, "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
+      if (cartManager.getUniqueSelectedItemCount() == 0) {
+        Toast.makeText(this, "Vui lòng chọn sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
         return;
       }
 
-      // Navigate to checkout activity
+      // Navigate to checkout activity with selected item IDs
+      List<CartItem> selectedItems = cartManager.getSelectedItems();
+      ArrayList<String> selectedItemIds = new ArrayList<>();
+      for (CartItem item : selectedItems) {
+        if (item.getId() != null) {
+          selectedItemIds.add(item.getId());
+        }
+      }
+      
       Intent checkoutIntent = new Intent(this, CheckoutActivity.class);
+      checkoutIntent.putStringArrayListExtra("SELECTED_ITEM_IDS", selectedItemIds);
+      Log.d("CartActivity", "Navigating to checkout with " + selectedItemIds.size() + " selected items");
       startActivity(checkoutIntent);
+    });
+    
+    // Handle "Select All" checkbox
+    checkboxSelectAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      if (buttonView.isPressed()) { // Only handle user clicks, not programmatic changes
+        if (isChecked) {
+          cartManager.selectAllItems();
+        } else {
+          cartManager.deselectAllItems();
+        }
+      }
     });
   }
 
@@ -160,28 +293,56 @@ public class CartActivity extends AppCompatActivity implements
       // Show empty cart state
       emptyCartLayout.setVisibility(View.VISIBLE);
       recyclerViewCart.setVisibility(View.GONE);
+      layoutSelectAll.setVisibility(View.GONE);
+      dividerSelectAll.setVisibility(View.GONE);
       btnClearCart.setEnabled(false);
       btnCheckout.setEnabled(false);
 
       textTotalPrice.setText("₫0");
       textItemCount.setText("0 sản phẩm");
     } else {
-      // Show cart items
+      // Show cart items and select all header
       emptyCartLayout.setVisibility(View.GONE);
       recyclerViewCart.setVisibility(View.VISIBLE);
+      layoutSelectAll.setVisibility(View.VISIBLE);
+      dividerSelectAll.setVisibility(View.VISIBLE);
       btnClearCart.setEnabled(true);
-      btnCheckout.setEnabled(true);
 
       // Update adapter
       cartAdapter.updateCartItems(cartItems);
 
-      // Update summary
-      double totalPrice = cartManager.getTotalPrice();
-      int totalCount = cartManager.getTotalItemCount();
-      int uniqueCount = cartManager.getUniqueItemCount();
+      // Calculate SELECTED items only
+      double totalPriceSelected = cartManager.getTotalPriceOfSelected();
+      int selectedCount = cartManager.getSelectedItemCount();
+      int uniqueSelectedCount = cartManager.getUniqueSelectedItemCount();
+      int totalUniqueCount = cartManager.getUniqueItemCount();
 
-      textTotalPrice.setText(String.format("₫%.0f", totalPrice));
-      textItemCount.setText(String.format("%d sản phẩm (%d loại)", totalCount, uniqueCount));
+      // Update "Select All" checkbox state
+      checkboxSelectAll.setOnCheckedChangeListener(null); // Remove listener temporarily
+      checkboxSelectAll.setChecked(cartManager.isAllSelected());
+      checkboxSelectAll.setText(String.format("Chọn tất cả (%d)", totalUniqueCount));
+      checkboxSelectAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        if (buttonView.isPressed()) {
+          if (isChecked) {
+            cartManager.selectAllItems();
+          } else {
+            cartManager.deselectAllItems();
+          }
+        }
+      });
+
+      // Update price and count (selected items only)
+      textTotalPrice.setText(String.format("₫%.0f", totalPriceSelected));
+
+      if (uniqueSelectedCount > 0) {
+        textItemCount.setText(String.format("Đã chọn %d sản phẩm (%d loại)",
+            selectedCount, uniqueSelectedCount));
+        btnCheckout.setEnabled(true);
+      } else {
+        textItemCount.setText(String.format("Chưa chọn sản phẩm nào (%d sản phẩm trong giỏ)",
+            totalUniqueCount));
+        btnCheckout.setEnabled(false);
+      }
     }
   }
 
@@ -224,12 +385,28 @@ public class CartActivity extends AppCompatActivity implements
     });
   }
 
+  @Override
+  public void onItemSelectionChanged(CartItem item, boolean isSelected) {
+    // Selection state is already updated in the item
+    // Just trigger UI update
+    cartManager.updateItemSelection(item.getId(), isSelected);
+  }
+
   // CartManager.CartUpdateListener implementation
   @Override
   public void onCartUpdated(List<CartItem> cartItems) {
     Log.d("CartActivity", "onCartUpdated called with " + cartItems.size() + " items");
     runOnUiThread(() -> {
       updateUI(cartItems);
+      
+      // Handle auto-selection AFTER UI is updated (from "Buy Now" flow)
+      if (isFirstLoad) {
+        isFirstLoad = false;
+        // Post to handler to ensure adapter has finished updating
+        recyclerViewCart.post(() -> {
+          handleAutoSelection();
+        });
+      }
     });
   }
 

@@ -26,6 +26,11 @@ public class CartItem {
   private String variantRam; // RAM của variant
   private String variantStorage; // Storage của variant
 
+  // Selection state (NOT persisted to Firebase)
+  // transient = không serialize vào Firestore
+  // Chỉ tồn tại trong memory, mặc định = false (không chọn)
+  private transient boolean isSelected = false;
+
   // Constructor mặc định (Firebase yêu cầu)
   public CartItem() {
   }
@@ -168,6 +173,15 @@ public class CartItem {
 
   public String getVariantStorage() {
     return variantStorage;
+  }
+
+  // Selection state getter/setter
+  public boolean isSelected() {
+    return isSelected;
+  }
+
+  public void setSelected(boolean selected) {
+    isSelected = selected;
   }
 
   // Setters
