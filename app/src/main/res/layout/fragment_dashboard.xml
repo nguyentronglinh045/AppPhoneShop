@@ -275,18 +275,21 @@
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/sortLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sort by: "
+                android:text="Sort by:"
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:includeFontPadding="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <TextView
                 android:id="@+id/sortButton"
@@ -296,12 +299,32 @@
                 android:textColor="@color/primary"
                 android:textSize="14sp"
                 android:textStyle="bold"
+                android:includeFontPadding="false"
                 android:background="?attr/selectableItemBackground"
-                android:padding="4dp"
-                android:drawableEnd="@drawable/ic_arrow_drop_down"
-                android:drawableTint="@color/primary" />
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                app:layout_constraintStart_toEndOf="@id/sortLabel"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/sortLabel"
+                android:layout_marginStart="6dp" />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/sortArrow"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:clickable="false"
+                android:focusable="false"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_arrow_drop_down"
+                app:tint="@color/primary"
+                app:layout_constraintStart_toEndOf="@id/sortButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/sortLabel"
+                android:layout_marginStart="2dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
