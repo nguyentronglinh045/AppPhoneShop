@@ -72,9 +72,6 @@ public class DashboardFragment extends Fragment {
                 // Set the category filter after a small delay to ensure data is loaded
                 binding.getRoot().postDelayed(() -> {
                     viewModel.setSelectedCategory(categoryFilter);
-                    Toast.makeText(getContext(), 
-                        "Lọc theo: " + categoryFilter, 
-                        Toast.LENGTH_SHORT).show();
                 }, 300);
             }
         }

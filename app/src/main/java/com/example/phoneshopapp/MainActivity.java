@@ -44,8 +44,7 @@ public class MainActivity extends AppCompatActivity implements CartManager.CartU
 
         // Setup navigation
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupWithNavController(binding.navView, navController);
-
+        
         // Ẩn mục Admin nếu không phải admin
         if (!"admin".equalsIgnoreCase(userManager.getRole())) {
             binding.navView.getMenu().findItem(R.id.navigation_admin).setVisible(false);
@@ -57,13 +56,13 @@ public class MainActivity extends AppCompatActivity implements CartManager.CartU
         cartManager.addCartUpdateListener(this);
 
         // Setup cart navigation
-        setupCartNavigation();
+        setupCartNavigation(navController);
 
         // Initialize cart badge
         updateCartBadge();
     }
 
-    private void setupCartNavigation() {
+    private void setupCartNavigation(NavController navController) {
         binding.navView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
@@ -83,10 +82,10 @@ public class MainActivity extends AppCompatActivity implements CartManager.CartU
                 // Navigate to CartActivity
                 Intent intent = new Intent(this, CartActivity.class);
                 startActivity(intent);
-                return true;
+                // Don't return true vì cart không phải fragment trong bottom nav
+                return false;
             } else {
-                // Use default navigation for other items
-                NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+                // Use NavigationUI for fragments - nó tự động sync selection
                 return NavigationUI.onNavDestinationSelected(item, navController);
             }
         });

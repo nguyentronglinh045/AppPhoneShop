@@ -105,14 +105,8 @@ public class HomeFragment extends Fragment {
             
             try {
                 Navigation.findNavController(root).navigate(R.id.navigation_categories, bundle);
-                Toast.makeText(getContext(), 
-                    "Đang lọc theo: " + category.getName(), 
-                    Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Log.e(TAG, "Navigation error: " + e.getMessage());
-                Toast.makeText(getContext(), 
-                    "Không thể chuyển trang", 
-                    Toast.LENGTH_SHORT).show();
             }
         });
         binding.recyclerCategories.setLayoutManager(
