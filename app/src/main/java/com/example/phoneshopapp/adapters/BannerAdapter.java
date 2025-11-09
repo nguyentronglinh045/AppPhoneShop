@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.phoneshopapp.R;
@@ -49,34 +48,18 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerView
     
     class BannerViewHolder extends RecyclerView.ViewHolder {
         private ImageView bannerImage;
-        private TextView bannerTitle;
-        private TextView bannerSubtitle;
-        private TextView bannerCta;
         
         public BannerViewHolder(@NonNull View itemView) {
             super(itemView);
             bannerImage = itemView.findViewById(R.id.bannerImage);
-            bannerTitle = itemView.findViewById(R.id.bannerTitle);
-            bannerSubtitle = itemView.findViewById(R.id.bannerSubtitle);
-            bannerCta = itemView.findViewById(R.id.bannerCta);
         }
         
         public void bind(Banner banner) {
-            bannerTitle.setText(banner.getTitle());
-            bannerSubtitle.setText(banner.getSubtitle());
-            bannerCta.setText(banner.getCtaText());
-            
-            // Set image placeholder for now (you can add Glide later for actual images)
+            // Set banner image
             bannerImage.setImageResource(banner.getImageResource());
             
-            // Set click listeners
-            bannerCta.setOnClickListener(v -> {
-                if (onBannerClickListener != null) {
-                    onBannerClickListener.onBannerClick(banner);
-                }
-            });
-            
-            itemView.setOnClickListener(v -> {
+            // Set click listener on the entire image
+            bannerImage.setOnClickListener(v -> {
                 if (onBannerClickListener != null) {
                     onBannerClickListener.onBannerClick(banner);
                 }

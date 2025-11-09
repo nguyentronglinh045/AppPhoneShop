@@ -306,24 +306,25 @@ public class HomeFragment extends Fragment {
     private List<Banner> createSampleBanners() {
         List<Banner> banners = new ArrayList<>();
         
+        // Chỉ cần imageResource, các trường khác không còn hiển thị
         banners.add(new Banner(
-            "iPhone 16 Pro Max",
-            "Giảm giá lên đến 20%",
-            "Mua Ngay",
-            R.drawable.banner_iphone16 // You can change this later
+            "",
+            "",
+            "",
+            R.drawable.banner_iphone16
         ));
         
         banners.add(new Banner(
-            "Samsung Galaxy S24",
-            "Ưu đãi đặc biệt",
-            "Khám Phá",
+            "",
+            "",
+            "",
             R.drawable.banner_galaxy
         ));
         
         banners.add(new Banner(
-            "Phụ Kiện Hot",
-            "Miễn phí vận chuyển",
-            "Xem Thêm",
+            "",
+            "",
+            "",
             R.drawable.banner_phukien
         ));
         
@@ -371,11 +372,11 @@ public class HomeFragment extends Fragment {
                 if (bannerCount > 1) {
                     currentBannerPosition = (currentBannerPosition + 1) % bannerCount;
                     bannerViewPager.setCurrentItem(currentBannerPosition, true);
-                    bannerHandler.postDelayed(this, 3000); // Auto scroll every 3 seconds
+                    bannerHandler.postDelayed(this, 5000); // Auto scroll every 5 seconds
                 }
             }
         };
-        bannerHandler.postDelayed(bannerRunnable, 3000);
+        bannerHandler.postDelayed(bannerRunnable, 5000);
     }
     
     private void stopAutoScroll() {
