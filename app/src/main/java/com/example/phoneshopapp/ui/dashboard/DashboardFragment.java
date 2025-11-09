@@ -1,75 +1,68 @@
 package com.example.phoneshopapp.ui.dashboard;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.phoneshopapp.databinding.FragmentDashboardBinding;
-import com.google.android.material.card.MaterialCardView;
-
-
-
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.example.phoneshopapp.Product;
 import com.example.phoneshopapp.ProductAdapter;
-import com.example.phoneshopapp.ProductManager;
 import com.example.phoneshopapp.R;
 import com.example.phoneshopapp.databinding.FragmentDashboardBinding;
 import com.google.android.material.card.MaterialCardView;
-import java.util.ArrayList;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DashboardFragment extends Fragment {
+    
     private FragmentDashboardBinding binding;
+    private DashboardViewModel viewModel;
+    
     private RecyclerView recyclerViewProducts;
     private SwipeRefreshLayout swipeRefreshLayout;
     private EditText searchEditText;
     private ImageView filterButton;
     private TextView sortButton, resultCountText;
     private LinearLayout loadingView, emptyView;
-    private MaterialCardView categoryAll, categoryIphone, categorySamsung, categoryXiaomi, categoryOppo;
+    private HorizontalScrollView categoryScrollView;
+    private LinearLayout categoryContainer;
 
     private ProductAdapter productAdapter;
-    private List<Product> allProducts = new ArrayList<>();
-    private String selectedCategory = "All";
+    private Handler searchHandler;
+    private Runnable searchRunnable;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        
+        viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        searchHandler = new Handler(Looper.getMainLooper());
 
         initializeViews();
         setupRecyclerView();
         setupClickListeners();
-        loadProducts();
+        observeViewModel();
 
         return root;
     }
@@ -83,109 +76,250 @@ public class DashboardFragment extends Fragment {
         resultCountText = binding.resultCountText;
         loadingView = binding.loadingView;
         emptyView = binding.emptyView;
-        categoryAll = binding.categoryAll;
-        categoryIphone = binding.categoryIphone;
-        categorySamsung = binding.categorySamsung;
-        categoryXiaomi = binding.categoryXiaomi;
-        categoryOppo = binding.categoryOppo;
+        
+        // Get category container - tìm HorizontalScrollView trong layout
+        View parent = binding.getRoot();
+        categoryScrollView = findCategoryScrollView(parent);
+        if (categoryScrollView != null && categoryScrollView.getChildCount() > 0) {
+            View child = categoryScrollView.getChildAt(0);
+            if (child instanceof LinearLayout) {
+                categoryContainer = (LinearLayout) child;
+            }
+        }
+    }
+    
+    private HorizontalScrollView findCategoryScrollView(View parent) {
+        if (parent instanceof HorizontalScrollView) {
+            return (HorizontalScrollView) parent;
+        }
+        if (parent instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) parent;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View child = group.getChildAt(i);
+                HorizontalScrollView result = findCategoryScrollView(child);
+                if (result != null) return result;
+            }
+        }
+        return null;
     }
 
     private void setupRecyclerView() {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         recyclerViewProducts.setLayoutManager(layoutManager);
-        productAdapter = new ProductAdapter(new ArrayList<>());
+        productAdapter = new ProductAdapter(java.util.Collections.emptyList());
         recyclerViewProducts.setAdapter(productAdapter);
     }
 
     private void setupClickListeners() {
-        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
-            String searchQuery = searchEditText.getText().toString().trim();
-            if (!searchQuery.isEmpty()) {
-                performSearch(searchQuery);
+        // Real-time search với debounce
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (searchRunnable != null) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                }
+                searchRunnable = () -> viewModel.searchProducts(s.toString().trim());
+                searchHandler.postDelayed(searchRunnable, 300);
             }
-            return true;
         });
+        
         filterButton.setOnClickListener(v -> showFilterDialog());
         sortButton.setOnClickListener(v -> showSortDialog());
-        categoryAll.setOnClickListener(v -> selectCategory("All"));
-        categoryIphone.setOnClickListener(v -> selectCategory("iPhone"));
-        categorySamsung.setOnClickListener(v -> selectCategory("Samsung"));
-        categoryXiaomi.setOnClickListener(v -> selectCategory("Xiaomi"));
-        categoryOppo.setOnClickListener(v -> selectCategory("Oppo"));
-        swipeRefreshLayout.setOnRefreshListener(this::loadProducts);
+        swipeRefreshLayout.setOnRefreshListener(() -> viewModel.loadProducts());
+        
+        // Clear filters button
+        View clearFiltersButton = emptyView.findViewById(R.id.clearFiltersButton);
+        if (clearFiltersButton != null) {
+            clearFiltersButton.setOnClickListener(v -> {
+                searchEditText.setText("");
+                viewModel.clearFilters();
+            });
+        }
     }
 
-    private void loadProducts() {
-        showLoading(true);
-        ProductManager.getInstance().loadProductsFromFirebase(new ProductManager.OnProductsLoadedListener() {
-            @Override
-            public void onSuccess(List<Product> products) {
-                allProducts = products;
-                showLoading(false);
-                swipeRefreshLayout.setRefreshing(false);
-                filterAndShowProducts();
+    private void observeViewModel() {
+        // Observe filtered products
+        viewModel.getFilteredProducts().observe(getViewLifecycleOwner(), products -> {
+            productAdapter.updateData(products);
+            if (products.isEmpty()) {
+                showEmptyView(true, "Không có sản phẩm nào");
+            } else {
+                showEmptyView(false, "");
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                showLoading(false);
-                swipeRefreshLayout.setRefreshing(false);
-                showEmptyView(true, e.getMessage());
+        });
+        
+        // Observe categories - dynamic categories
+        viewModel.getCategories().observe(getViewLifecycleOwner(), categories -> {
+            updateCategoryChips(categories);
+        });
+        
+        // Observe selected category
+        viewModel.getSelectedCategory().observe(getViewLifecycleOwner(), category -> {
+            updateCategorySelection(category);
+        });
+        
+        // Observe loading state
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            showLoading(isLoading);
+            swipeRefreshLayout.setRefreshing(isLoading);
+        });
+        
+        // Observe result count
+        viewModel.getResultCount().observe(getViewLifecycleOwner(), count -> {
+            resultCountText.setText("Hiển thị " + count + " sản phẩm");
+        });
+        
+        // Observe error
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    private void filterAndShowProducts() {
-        List<Product> filtered = new ArrayList<>();
-        if (selectedCategory.equals("All")) {
-            filtered.addAll(allProducts);
-        } else {
-            for (Product p : allProducts) {
-                if (p.getCategory() != null && p.getCategory().equalsIgnoreCase(selectedCategory)) {
-                    filtered.add(p);
+    
+    private void updateCategoryChips(List<String> categories) {
+        if (categoryContainer == null) return;
+        
+        categoryContainer.removeAllViews();
+        
+        for (String category : categories) {
+            MaterialCardView chip = createCategoryChip(category);
+            categoryContainer.addView(chip);
+        }
+    }
+    
+    private MaterialCardView createCategoryChip(String category) {
+        MaterialCardView chip = new MaterialCardView(requireContext());
+        
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.setMarginEnd((int) (8 * getResources().getDisplayMetrics().density));
+        chip.setLayoutParams(params);
+        
+        chip.setRadius(20 * getResources().getDisplayMetrics().density);
+        chip.setCardElevation(2 * getResources().getDisplayMetrics().density);
+        chip.setCardBackgroundColor(requireContext().getColor(
+            category.equals("All") ? R.color.primary : R.color.white));
+        chip.setStrokeWidth((int) (1 * getResources().getDisplayMetrics().density));
+        chip.setStrokeColor(requireContext().getColor(R.color.stroke_light));
+        chip.setClickable(true);
+        chip.setFocusable(true);
+        chip.setRippleColor(android.content.res.ColorStateList.valueOf(
+            requireContext().getColor(R.color.primary_light)));
+        
+        TextView textView = new TextView(requireContext());
+        textView.setText(category);
+        textView.setTextColor(requireContext().getColor(
+            category.equals("All") ? R.color.white : R.color.text_primary));
+        textView.setTextSize(14);
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        textView.setPadding(padding, padding / 2, padding, padding / 2);
+        
+        chip.addView(textView);
+        chip.setOnClickListener(v -> viewModel.setSelectedCategory(category));
+        
+        return chip;
+    }
+    
+    private void updateCategorySelection(String selectedCategory) {
+        if (categoryContainer == null) return;
+        
+        for (int i = 0; i < categoryContainer.getChildCount(); i++) {
+            View child = categoryContainer.getChildAt(i);
+            if (child instanceof MaterialCardView) {
+                MaterialCardView chip = (MaterialCardView) child;
+                if (chip.getChildCount() > 0 && chip.getChildAt(0) instanceof TextView) {
+                    TextView textView = (TextView) chip.getChildAt(0);
+                    String category = textView.getText().toString();
+                    
+                    boolean isSelected = category.equals(selectedCategory);
+                    chip.setCardBackgroundColor(requireContext().getColor(
+                        isSelected ? R.color.primary : R.color.white));
+                    chip.setStrokeColor(requireContext().getColor(
+                        isSelected ? R.color.primary : R.color.stroke_light));
+                    textView.setTextColor(requireContext().getColor(
+                        isSelected ? R.color.white : R.color.text_primary));
                 }
             }
         }
-        productAdapter.updateData(filtered);
-        resultCountText.setText("Hiển thị " + filtered.size() + " sản phẩm");
-        showEmptyView(filtered.isEmpty(), "Không có sản phẩm nào trong mục này");
-    }
-
-    private void performSearch(String query) {
-        List<Product> filtered = new ArrayList<>();
-        for (Product p : allProducts) {
-            if (p.getName() != null && p.getName().toLowerCase().contains(query.toLowerCase())) {
-                if (selectedCategory.equals("All") || (p.getCategory() != null && p.getCategory().equalsIgnoreCase(selectedCategory))) {
-                    filtered.add(p);
-                }
-            }
-        }
-        productAdapter.updateData(filtered);
-        resultCountText.setText("Tìm thấy " + filtered.size() + " sản phẩm");
-        showEmptyView(filtered.isEmpty(), "Không tìm thấy sản phẩm phù hợp");
-    }
-
-    private void showFilterDialog() {
-        Toast.makeText(getContext(), "Filter dialog", Toast.LENGTH_SHORT).show();
     }
 
     private void showSortDialog() {
-        Toast.makeText(getContext(), "Sort dialog", Toast.LENGTH_SHORT).show();
+        String[] sortOptions = {
+            "Mặc định",
+            "Giá: Thấp đến Cao",
+            "Giá: Cao đến Thấp",
+            "Tên: A-Z",
+            "Tên: Z-A"
+        };
+        
+        String[] sortValues = {
+            "default",
+            "price_asc",
+            "price_desc",
+            "name_asc",
+            "name_desc"
+        };
+        
+        new AlertDialog.Builder(requireContext())
+            .setTitle("Sắp xếp theo")
+            .setItems(sortOptions, (dialog, which) -> {
+                viewModel.setSelectedSort(sortValues[which]);
+                sortButton.setText(sortOptions[which]);
+            })
+            .show();
     }
 
-    private void selectCategory(String category) {
-        selectedCategory = category;
-        filterAndShowProducts();
-        updateCategorySelection(category);
-    }
-
-    private void updateCategorySelection(String selectedCategory) {
-        // Đặt lại trạng thái cho tất cả category
-        categoryAll.setStrokeColor(requireContext().getColor(selectedCategory.equals("All") ? R.color.primary : R.color.stroke_light));
-        categoryIphone.setStrokeColor(requireContext().getColor(selectedCategory.equals("iPhone") ? R.color.primary : R.color.stroke_light));
-        categorySamsung.setStrokeColor(requireContext().getColor(selectedCategory.equals("Samsung") ? R.color.primary : R.color.stroke_light));
-        categoryXiaomi.setStrokeColor(requireContext().getColor(selectedCategory.equals("Xiaomi") ? R.color.primary : R.color.stroke_light));
-        categoryOppo.setStrokeColor(requireContext().getColor(selectedCategory.equals("Oppo") ? R.color.primary : R.color.stroke_light));
+    private void showFilterDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_filter, null);
+        
+        // Get max price từ ViewModel
+        double maxPrice = viewModel.getMaxProductPrice();
+        
+        // TODO: Setup price range slider và brand checkboxes
+        // Đơn giản hóa cho dự án học tập - chỉ filter theo brand
+        
+        Set<String> allBrands = viewModel.getAllBrands();
+        LinearLayout brandContainer = dialogView.findViewById(R.id.brandContainer);
+        
+        if (brandContainer != null && !allBrands.isEmpty()) {
+            Set<String> selectedBrands = new HashSet<>();
+            
+            for (String brand : allBrands) {
+                android.widget.CheckBox checkBox = new android.widget.CheckBox(requireContext());
+                checkBox.setText(brand);
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked) {
+                        selectedBrands.add(brand);
+                    } else {
+                        selectedBrands.remove(brand);
+                    }
+                });
+                brandContainer.addView(checkBox);
+            }
+            
+            new AlertDialog.Builder(requireContext())
+                .setTitle("Lọc sản phẩm")
+                .setView(dialogView)
+                .setPositiveButton("Áp dụng", (dialog, which) -> {
+                    viewModel.setSelectedBrands(selectedBrands);
+                })
+                .setNegativeButton("Hủy", null)
+                .setNeutralButton("Xóa bộ lọc", (dialog, which) -> {
+                    viewModel.clearFilters();
+                })
+                .show();
+        } else {
+            Toast.makeText(getContext(), "Chưa có sản phẩm để lọc", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showLoading(boolean show) {
@@ -206,6 +340,9 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (searchHandler != null && searchRunnable != null) {
+            searchHandler.removeCallbacks(searchRunnable);
+        }
         binding = null;
     }
 }
