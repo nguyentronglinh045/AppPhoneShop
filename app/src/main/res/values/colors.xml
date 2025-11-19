@@ -64,4 +64,9 @@
     <color name="review_background">#F5F5F5</color>
     <color name="verified_badge_bg">#E8F5E9</color>
     <color name="verified_badge_text">#4CAF50</color>
+    
+    <!-- Favorite Feature Colors -->
+    <color name="favorite_active">#F44336</color>
+    <color name="favorite_inactive">#BDBDBD</color>
+    <color name="favorite_background">#CCFFFFFF</color>
 </resources>

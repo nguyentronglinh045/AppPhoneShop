@@ -38,7 +38,7 @@ public class ProductDetailActivity extends AppCompatActivity {
   private ImageView imageProduct;
   private TextView textProductName, textProductPrice, textProductCategory, textProductDescription, textQuantity;
   private TextView textSpecScreen, textSpecProcessor, textSpecRam, textSpecStorage; // Spec TextViews
-  private MaterialButton btnAddToCart, btnBuyNow, btnPlus, btnMinus;
+  private MaterialButton btnAddToCart, btnBuyNow, btnPlus, btnMinus, btnFavorite;
 
   // Review UI components
   private TextView textAverageRating, textReviewCount, textEmptyReviews;
@@ -71,6 +71,10 @@ public class ProductDetailActivity extends AppCompatActivity {
   private ProductManager productManager;
   private CartManager cartManager;
   private ReviewManager reviewManager;
+  
+  // Favorite functionality
+  private com.example.phoneshopapp.data.favorite.FavoriteManager favoriteManager;
+  private boolean isFavorite = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,10 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     // Initialize review manager
     reviewManager = ReviewManager.getInstance(this);
+    
+    // Initialize favorite manager
+    favoriteManager = com.example.phoneshopapp.data.favorite.FavoriteManager.getInstance();
+    favoriteManager.initialize(this);
 
     // Load product data
     loadProductData();
@@ -109,6 +117,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     btnBuyNow = findViewById(R.id.btnBuyNow);
     btnPlus = findViewById(R.id.btnPlus);
     btnMinus = findViewById(R.id.btnMinus);
+    btnFavorite = findViewById(R.id.btnFavorite);
 
     // Initialize Spec TextViews
     textSpecScreen = findViewById(R.id.textSpecScreen);
@@ -249,6 +258,9 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     Log.d("ProductDetail", "Product info displayed successfully");
 
+    // Check and update favorite state
+    checkFavoriteState();
+
     // Load variants if product has variants
     if (product.isHasVariants()) {
       Log.d("ProductDetail", "Product has variants, loading...");
@@ -357,7 +369,60 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
   }
 
+  // ================ Favorite Functionality ================
+  
+  private void checkFavoriteState() {
+    if (product == null) return;
+    
+    // FavoriteManager.isFavorite() returns boolean directly
+    isFavorite = favoriteManager.isFavorite(product.getId());
+    updateFavoriteButton();
+  }
+  
+  private void updateFavoriteButton() {
+    if (btnFavorite == null) return;
+    
+    if (isFavorite) {
+      btnFavorite.setIconResource(R.drawable.ic_favorite_filled);
+      btnFavorite.setIconTint(android.content.res.ColorStateList.valueOf(getColor(R.color.favorite_active)));
+    } else {
+      btnFavorite.setIconResource(R.drawable.ic_favorite_border);
+      btnFavorite.setIconTint(android.content.res.ColorStateList.valueOf(getColor(R.color.favorite_inactive)));
+    }
+  }
+  
+  private void toggleFavorite() {
+    if (product == null) return;
+    
+    // Optimistic UI update
+    isFavorite = !isFavorite;
+    updateFavoriteButton();
+    
+    // Sync with backend using FavoriteManager.OnFavoriteOperationListener
+    favoriteManager.toggleFavorite(product, new com.example.phoneshopapp.data.favorite.FavoriteManager.OnFavoriteOperationListener() {
+      @Override
+      public void onSuccess(String message) {
+        // Silent success
+      }
+      
+      @Override
+      public void onFailure(String error) {
+        // Revert on error
+        isFavorite = !isFavorite;
+        updateFavoriteButton();
+        Toast.makeText(ProductDetailActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+      }
+    });
+  }
+  
+  // ================ End Favorite Functionality ================
+
   private void setupClickListeners() {
+    // Favorite button
+    if (btnFavorite != null) {
+      btnFavorite.setOnClickListener(v -> toggleFavorite());
+    }
+    
     // Quantity controls
     if (btnPlus != null && textQuantity != null) {
       btnPlus.setOnClickListener(v -> {

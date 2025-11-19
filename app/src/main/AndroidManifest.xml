@@ -78,6 +78,11 @@
             android:parentActivityName=".MainActivity">
         </activity>
         <activity
+            android:name=".ui.favorites.FavoritesActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity">
+        </activity>
+        <activity
             android:name=".RegisterActivity"
             android:exported="false">
         </activity>

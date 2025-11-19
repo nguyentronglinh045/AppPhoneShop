@@ -119,6 +119,12 @@ public class ProfileFragment extends Fragment {
       startActivity(intent);
     });
 
+    // My Favorites
+    binding.layoutMyFavorites.setOnClickListener(v -> {
+      Intent intent = new Intent(getActivity(), com.example.phoneshopapp.ui.favorites.FavoritesActivity.class);
+      startActivity(intent);
+    });
+
     // Manage Addresses
     binding.layoutManageAddresses.setOnClickListener(v -> {
       Intent intent = new Intent(getActivity(), com.example.phoneshopapp.ManageAddressesActivity.class);

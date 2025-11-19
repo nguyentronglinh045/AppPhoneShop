@@ -80,7 +80,8 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
           notifyDataSetChanged();
       }
   
-      static class ProductViewHolder extends RecyclerView.ViewHolder {    TextView name, price;
+  static class ProductViewHolder extends RecyclerView.ViewHolder {
+    TextView name, price;
     ImageView image;
 
     ProductViewHolder(View itemView) {
