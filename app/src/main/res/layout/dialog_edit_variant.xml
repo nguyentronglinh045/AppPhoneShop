@@ -12,7 +12,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit Product Variant"
+            android:text="Chỉnh sửa phiên bản sản phẩm"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp"
@@ -26,7 +26,7 @@
                 android:id="@+id/editColor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Color (e.g., Black)"
+                android:hint="Màu sắc (VD: Đen)"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -38,7 +38,7 @@
                 android:id="@+id/editColorHex"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Color Hex (e.g., #000000)"
+                android:hint="Mã màu Hex (VD: #000000)"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,7 +98,7 @@
                 android:id="@+id/editStock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Stock Quantity"
+                android:hint="Số lượng tồn kho"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -106,13 +106,13 @@
             android:id="@+id/checkAvailable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Available"
+            android:text="Còn hàng"
             android:layout_marginBottom="4dp" />
             
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Variants không khả dụng sẽ không hiển thị cho người dùng khi mua hàng"
+            android:text="Phiên bản không khả dụng sẽ không hiển thị cho người dùng khi mua hàng"
             android:textSize="12sp"
             android:textStyle="italic"
             android:layout_marginBottom="16dp" />
@@ -127,7 +127,7 @@
                 android:id="@+id/btnCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cancel"
+                android:text="Hủy"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_marginEnd="8dp" />
 
@@ -135,7 +135,7 @@
                 android:id="@+id/btnSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="Lưu"
                 android:backgroundTint="@color/primary"
                 android:textColor="@android:color/white" />
 

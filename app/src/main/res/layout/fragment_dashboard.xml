@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Products"
+            android:text="Sản phẩm"
             android:textColor="@color/white"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -58,7 +58,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
-                    android:hint="Search products..."
+                    android:hint="Tìm kiếm sản phẩm..."
                     android:textColorHint="@color/text_secondary"
                     android:textColor="@color/text_primary"
                     android:textSize="16sp"
@@ -94,7 +94,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Categories"
+            android:text="Danh mục"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -126,7 +126,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="All"
+                        android:text="Tất cả"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -271,7 +271,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Showing all products"
+            android:text="Hiển thị tất cả sản phẩm"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
@@ -283,7 +283,7 @@
                 android:id="@+id/sortLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sort by:"
+                android:text="Sắp xếp:"
                 android:textColor="@color/text_secondary"
                 android:textSize="14sp"
                 android:includeFontPadding="false"
@@ -295,7 +295,7 @@
                 android:id="@+id/sortButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Popular"
+                android:text="Phổ biến"
                 android:textColor="@color/primary"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -363,7 +363,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Loading products..."
+            android:text="Đang tải sản phẩm..."
             android:textColor="@color/text_secondary"
             android:textSize="16sp" />
 
@@ -390,7 +390,7 @@
             android:id="@+id/textEmptyTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No products found"
+            android:text="Không tìm thấy sản phẩm"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -399,7 +399,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Try adjusting your search or filter criteria"
+            android:text="Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc"
             android:textColor="@color/text_secondary"
             android:textSize="14sp"
             android:textAlignment="center"
@@ -409,7 +409,7 @@
             android:id="@+id/clearFiltersButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clear Filters"
+            android:text="Xóa bộ lọc"
             style="@style/Widget.Material3.Button.TextButton"
             app:icon="@drawable/ic_clear"
             app:iconTint="@color/primary" />

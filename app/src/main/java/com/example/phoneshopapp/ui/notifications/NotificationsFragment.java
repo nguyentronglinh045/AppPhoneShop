@@ -107,7 +107,7 @@ public class NotificationsFragment extends Fragment implements CartAdapter.OnCar
     private void setupClickListeners() {
         btnCheckout.setOnClickListener(v -> {
             if (!cartManager.isEmpty()) {
-                Toast.makeText(getContext(), "Checkout functionality coming soon!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Tính năng thanh toán sẽ sớm có!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -119,8 +119,8 @@ public class NotificationsFragment extends Fragment implements CartAdapter.OnCar
             // Show empty cart message
             recyclerViewCart.setVisibility(View.GONE);
             layoutEmptyCart.setVisibility(View.VISIBLE);
-            textItemCount.setText("0 items");
-            textTotalPrice.setText("$0.00");
+            textItemCount.setText("0 sản phẩm");
+            textTotalPrice.setText("₫0");
             btnCheckout.setEnabled(false);
         } else {
             // Show cart items
@@ -129,11 +129,11 @@ public class NotificationsFragment extends Fragment implements CartAdapter.OnCar
 
             // Update item count
             int totalItems = cartManager.getTotalItemCount();
-            textItemCount.setText(totalItems + " item" + (totalItems > 1 ? "s" : ""));
+            textItemCount.setText(totalItems + " sản phẩm");
 
             // Update total price
             double totalPrice = cartManager.getTotalPrice();
-            textTotalPrice.setText("$" + String.format("%.2f", totalPrice));
+            textTotalPrice.setText("₫" + String.format("%.0f", totalPrice));
 
             // Enable checkout button
             btnCheckout.setEnabled(true);
@@ -153,7 +153,7 @@ public class NotificationsFragment extends Fragment implements CartAdapter.OnCar
     public void onRemoveItem(String productId) {
         cartManager.removeFromCart(productId);
         updateCartUI();
-        Toast.makeText(getContext(), "Item removed from cart", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Đã xóa sản phẩm khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
     }
 
     @Override

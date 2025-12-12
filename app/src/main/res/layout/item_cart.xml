@@ -38,7 +38,7 @@
                 android:id="@+id/textProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Product Name"
+                android:text="Tên sản phẩm"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -83,7 +83,7 @@
                 android:id="@+id/textTotalPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total: $999"
+                android:text="Tổng: $999"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary" />
 

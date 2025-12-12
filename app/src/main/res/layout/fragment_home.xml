@@ -48,7 +48,7 @@
                 android:id="@+id/homeSearchView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:queryHint="Search for products..."
+                app:queryHint="Tìm kiếm sản phẩm..."
                 app:iconifiedByDefault="false"
                 android:background="@android:color/transparent"
                 app:queryBackground="@android:color/transparent"
@@ -81,7 +81,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Flash Sale"
+                    android:text="Giảm giá chớp nhoáng"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -99,7 +99,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Vouchers"
+                    android:text="Mã giảm giá"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -117,7 +117,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Top Rated"
+                    android:text="Đánh giá cao"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -135,7 +135,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="New"
+                    android:text="Mới"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -156,7 +156,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Flash Sale"
+                    android:text="Giảm giá chớp nhoáng"
                     android:textColor="@color/primary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -199,21 +199,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Special Voucher!"
+                        android:text="Voucher đặc biệt!"
                         android:textColor="@color/secondary"
                         android:textStyle="bold"
                         android:textSize="16sp" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Get 10% off on your first order."
+                        android:text="Giảm 10% cho đơn hàng đầu tiên."
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
                 </LinearLayout>
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Claim"
+                    android:text="Nhận"
                     android:textColor="@color/text_on_primary"
                     android:backgroundTint="@color/secondary"
                     style="@style/Widget.MaterialComponents.Button.TextButton" />
@@ -231,7 +231,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Categories"
+                android:text="Danh mục"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -240,7 +240,7 @@
                 android:id="@+id/textViewAllCategories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View All"
+                android:text="Xem tất cả"
                 android:textColor="@color/primary_color"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -276,7 +276,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Popular Products"
+                android:text="Sản phẩm phổ biến"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -285,7 +285,7 @@
                 android:id="@+id/textViewAllPopular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View All"
+                android:text="Xem tất cả"
                 android:textColor="@color/primary_color"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -317,7 +317,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Recommended for You"
+                android:text="Gợi ý cho bạn"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -325,7 +325,7 @@
                 android:id="@+id/textViewAllRecommendations"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View All"
+                android:text="Xem tất cả"
                 android:textColor="@color/primary_color"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -346,7 +346,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Latest News &amp; Reviews"
+            android:text="Tin tức &amp; Đánh giá mới nhất"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -373,7 +373,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Best Deals"
+                android:text="Ưu đãi tốt nhất"
                 android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -382,7 +382,7 @@
                 android:id="@+id/textViewAllDeals"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View All"
+                android:text="Xem tất cả"
                 android:textColor="@color/primary_color"
                 android:textSize="14sp"
                 android:textStyle="bold"

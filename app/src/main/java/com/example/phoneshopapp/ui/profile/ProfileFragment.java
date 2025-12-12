@@ -63,7 +63,7 @@ public class ProfileFragment extends Fragment {
 
     binding.textUserName.setText(displayName);
     binding.textUserEmail.setText(displayEmail);
-    binding.textUserRole.setText("Role: " + role);
+    binding.textUserRole.setText("Vai trò: " + role);
 
     // Hiển thị phone number nếu có
     if (!phoneNumber.isEmpty()) {
@@ -106,10 +106,10 @@ public class ProfileFragment extends Fragment {
       if (current != null && current.getEmail() != null) {
         authRepository.sendPasswordReset(current.getEmail())
             .addOnSuccessListener(unused -> Toast
-                .makeText(getContext(), "Reset email sent to " + current.getEmail(), Toast.LENGTH_LONG).show())
+                .makeText(getContext(), "Email đặt lại mật khẩu đã được gửi đến " + current.getEmail(), Toast.LENGTH_LONG).show())
             .addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show());
       } else {
-        Toast.makeText(getContext(), "No signed-in user email", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Không có email người dùng đã đăng nhập", Toast.LENGTH_SHORT).show();
       }
     });
 
@@ -141,16 +141,16 @@ public class ProfileFragment extends Fragment {
       AuthRepository authRepository = new AuthRepository();
       FirebaseUser current = authRepository.getCurrentUser();
       if (current == null) {
-        Toast.makeText(getContext(), "No signed-in user", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Chưa có người dùng đăng nhập", Toast.LENGTH_SHORT).show();
         return;
       }
       if (current.isEmailVerified()) {
-        Toast.makeText(getContext(), "Email already verified", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Email đã được xác minh", Toast.LENGTH_SHORT).show();
         return;
       }
       current.sendEmailVerification()
           .addOnSuccessListener(
-              unused -> Toast.makeText(getContext(), "Verification email sent", Toast.LENGTH_LONG).show())
+              unused -> Toast.makeText(getContext(), "Email xác minh đã được gửi", Toast.LENGTH_LONG).show())
           .addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show());
     });
 
@@ -183,9 +183,9 @@ public class ProfileFragment extends Fragment {
     }
 
     AlertDialog dialog = new AlertDialog.Builder(requireContext())
-        .setTitle("Notification Settings")
+        .setTitle("Cài đặt thông báo")
         .setView(dialogView)
-        .setPositiveButton("Save", (d, which) -> {
+        .setPositiveButton("Lưu", (d, which) -> {
           // Save settings
           if (switchNotifications != null) {
             preferencesManager.setNotificationsEnabled(switchNotifications.isChecked());
@@ -197,9 +197,9 @@ public class ProfileFragment extends Fragment {
             preferencesManager.setEmailNotifications(switchEmailNotifications.isChecked());
           }
 
-          Toast.makeText(getContext(), "Notification settings saved", Toast.LENGTH_SHORT).show();
+          Toast.makeText(getContext(), "Đã lưu cài đặt thông báo", Toast.LENGTH_SHORT).show();
         })
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton("Hủy", null)
         .create();
 
     dialog.show();
@@ -210,17 +210,17 @@ public class ProfileFragment extends Fragment {
       return;
 
     new AlertDialog.Builder(requireContext())
-        .setTitle("Logout")
-        .setMessage("Are you sure you want to logout?")
-        .setPositiveButton("Logout", (dialog, which) -> {
+        .setTitle("Đăng xuất")
+        .setMessage("Bạn có chắc chắn muốn đăng xuất không?")
+        .setPositiveButton("Đăng xuất", (dialog, which) -> {
           performLogout();
         })
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton("Hủy", null)
         .show();
   }
 
   private void performLogout() {
-    Toast.makeText(getContext(), "Logging out...", Toast.LENGTH_SHORT).show();
+    Toast.makeText(getContext(), "Đang đăng xuất...", Toast.LENGTH_SHORT).show();
 
     Log.d(TAG, "User logging out: " + userManager.getUserInfoDebug());
 
@@ -244,7 +244,7 @@ public class ProfileFragment extends Fragment {
     AuthRepository repo = new AuthRepository();
     FirebaseUser current = repo.getCurrentUser();
     if (current == null) {
-      Toast.makeText(getContext(), "No signed-in user", Toast.LENGTH_SHORT).show();
+      Toast.makeText(getContext(), "Chưa có người dùng đăng nhập", Toast.LENGTH_SHORT).show();
       return;
     }
 
@@ -277,7 +277,7 @@ public class ProfileFragment extends Fragment {
       String fullName = inputFullName.getText().toString().trim();
       String phone = inputPhone.getText().toString().trim();
       if (fullName.isEmpty()) {
-        Toast.makeText(getContext(), "Full name is required", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Vui lòng nhập họ và tên", Toast.LENGTH_SHORT).show();
         return;
       }
       // Update Firestore
@@ -293,7 +293,7 @@ public class ProfileFragment extends Fragment {
             String initial = fullName.substring(0, 1).toUpperCase();
             binding.textAvatarInitial.setText(initial);
 
-            Toast.makeText(getContext(), "Profile updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Đã cập nhật hồ sơ", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
 
             Log.d(TAG, "Profile updated: " + userManager.getUserInfoDebug());

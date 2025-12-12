@@ -67,7 +67,7 @@
                     android:paddingRight="12dp"
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
-                    android:text="Category"
+                    android:text="Danh mục"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
@@ -90,7 +90,7 @@
                 android:id="@+id/textProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Product Name"
+                android:text="Tên sản phẩm"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -121,7 +121,7 @@
                     android:id="@+id/textSelectedVariant"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Please select variant"
+                    android:text="Vui lòng chọn phiên bản"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -138,7 +138,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Color"
+                        android:text="Màu sắc"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -162,7 +162,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Storage &amp; RAM"
+                        android:text="Dung lượng &amp; RAM"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -197,7 +197,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
-                        android:text="In Stock"
+                        android:text="Còn hàng"
                         android:textSize="13sp"
                         android:textColor="@color/success_color" />
 
@@ -215,7 +215,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Free Shipping"
+                    android:text="Miễn phí vận chuyển"
                     android:textColor="@color/primary"
                     android:textSize="12sp"
                     android:paddingLeft="10dp"
@@ -228,7 +228,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12-month Warranty"
+                    android:text="Bảo hành 12 tháng"
                     android:textColor="@color/primary"
                     android:textSize="12sp"
                     android:paddingLeft="10dp"
@@ -249,7 +249,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Quantity"
+                    android:text="Số lượng"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp" />
 
@@ -286,7 +286,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Description"
+                android:text="Mô tả"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -296,7 +296,7 @@
                 android:id="@+id/textProductDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Latest iPhone with titanium design and powerful A17 Pro chip"
+                android:text="Mô tả sản phẩm sẽ được hiển thị ở đây"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary"
                 android:lineSpacingExtra="4dp" />
@@ -520,7 +520,7 @@
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_weight="1"
-            android:text="Add to Cart"
+            android:text="Thêm vào giỏ hàng"
             android:textColor="@android:color/white"
             android:backgroundTint="@color/primary"
             android:layout_marginEnd="8dp"
@@ -531,7 +531,7 @@
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_weight="1"
-            android:text="Buy Now"
+            android:text="Mua ngay"
             android:textColor="@color/primary"
             android:backgroundTint="@android:color/white"
             app:strokeColor="@color/primary"

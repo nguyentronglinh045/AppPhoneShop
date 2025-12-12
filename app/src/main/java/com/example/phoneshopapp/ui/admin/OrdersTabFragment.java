@@ -58,13 +58,13 @@ public class OrdersTabFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
         if (orders.isEmpty()) {
-          Toast.makeText(getContext(), "No orders found", Toast.LENGTH_SHORT).show();
+          Toast.makeText(getContext(), "Không có đơn hàng nào", Toast.LENGTH_SHORT).show();
         }
       }
 
       @Override
       public void onError(String error) {
-        Toast.makeText(getContext(), "Error loading orders: " + error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Lỗi tải đơn hàng: " + error, Toast.LENGTH_SHORT).show();
       }
     });
   }
@@ -78,21 +78,21 @@ public class OrdersTabFragment extends Fragment {
     }
 
     new AlertDialog.Builder(requireContext())
-        .setTitle("Change Order Status")
+        .setTitle("Thay đổi trạng thái đơn hàng")
         .setItems(statusNames, (dialog, which) -> {
           OrderStatus newStatus = statuses[which];
 
           // Confirm status change
           new AlertDialog.Builder(requireContext())
-              .setTitle("Confirm Status Change")
-              .setMessage("Change order " + order.getOrderId() + " to " + newStatus.getDisplayName() + "?")
-              .setPositiveButton("Confirm", (d, w) -> {
+              .setTitle("Xác nhận thay đổi trạng thái")
+              .setMessage("Chuyển đơn hàng " + order.getOrderId() + " sang " + newStatus.getDisplayName() + "?")
+              .setPositiveButton("Xác nhận", (d, w) -> {
                 updateOrderStatus(order.getOrderId(), newStatus);
               })
-              .setNegativeButton("Cancel", null)
+              .setNegativeButton("Hủy", null)
               .show();
         })
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton("Hủy", null)
         .show();
   }
 
@@ -100,14 +100,14 @@ public class OrdersTabFragment extends Fragment {
     orderRepository.updateOrderStatus(orderId, newStatus, new UpdateCallback() {
       @Override
       public void onSuccess() {
-        Toast.makeText(getContext(), "Order status updated successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Cập nhật trạng thái đơn hàng thành công", Toast.LENGTH_SHORT).show();
         // Reload orders to show updated status
         loadAllOrders();
       }
 
       @Override
       public void onError(String error) {
-        Toast.makeText(getContext(), "Error updating status: " + error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Lỗi cập nhật trạng thái: " + error, Toast.LENGTH_SHORT).show();
       }
     });
   }

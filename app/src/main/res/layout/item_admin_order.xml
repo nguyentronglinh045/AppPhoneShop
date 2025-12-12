@@ -24,7 +24,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Order ID"
+                android:text="Mã đơn hàng"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -32,7 +32,7 @@
                 android:id="@+id/textOrderStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Status"
+                android:text="Trạng thái"
                 android:textSize="14sp"
                 android:padding="4dp"
                 android:background="@android:color/holo_blue_light"
@@ -44,7 +44,7 @@
             android:id="@+id/textCustomerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Customer Name"
+            android:text="Tên khách hàng"
             android:textSize="14sp"
             android:layout_marginBottom="4dp" />
 
@@ -52,7 +52,7 @@
             android:id="@+id/textOrderDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date"
+            android:text="Ngày đặt"
             android:textSize="13sp"
             android:textColor="@android:color/darker_gray"
             android:layout_marginBottom="4dp" />
@@ -61,7 +61,7 @@
             android:id="@+id/textOrderTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Total"
+            android:text="Tổng tiền"
             android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_green_dark"
@@ -78,7 +78,7 @@
             android:id="@+id/btnChangeStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Change Status"
+            android:text="Đổi trạng thái"
             android:backgroundTint="@color/primary"
             android:textColor="@android:color/white" />
 

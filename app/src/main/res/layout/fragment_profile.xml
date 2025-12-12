@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Role: user"
+                android:text="Vai trò: Người dùng"
                 android:textSize="14sp"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
@@ -72,7 +72,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account Settings"
+            android:text="Cài đặt tài khoản"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -103,7 +103,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Edit Profile"
+                android:text="Chỉnh sửa hồ sơ"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
                 android:layout_gravity="center_vertical" />
@@ -141,7 +141,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Change Password"
+                android:text="Đổi mật khẩu"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
                 android:layout_gravity="center_vertical" />
@@ -179,7 +179,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Verify Email"
+                android:text="Xác minh Email"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
                 android:layout_gravity="center_vertical" />
@@ -217,7 +217,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Order History"
+                android:text="Lịch sử đơn hàng"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
                 android:layout_gravity="center_vertical" />
@@ -256,7 +256,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="My Favorites"
+                android:text="Yêu thích của tôi"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
                 android:layout_gravity="center_vertical" />
@@ -294,7 +294,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Manage Addresses"
+                android:text="Quản lý địa chỉ"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
                 android:layout_gravity="center_vertical" />
@@ -311,7 +311,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="App Settings"
+            android:text="Cài đặt ứng dụng"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -342,7 +342,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Notifications"
+                android:text="Thông báo"
                 android:textSize="16sp"
                 android:textColor="@color/text_primary"
                 android:layout_gravity="center_vertical" />
@@ -361,7 +361,7 @@
             android:layout_width="match_parent"
             android:layout_height="52dp"
             android:layout_marginTop="24dp"
-            android:text="Logout"
+            android:text="Đăng xuất"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"

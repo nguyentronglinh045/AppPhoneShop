@@ -74,12 +74,12 @@ public class LoginActivity extends AppCompatActivity {
 
     // Xử lý khi bấm nút Google
     googleButton.setOnClickListener(v -> {
-      Toast.makeText(this, "Google login clicked", Toast.LENGTH_SHORT).show();
+      // Toast.makeText(this, "Đăng nhập Google được nhấn", Toast.LENGTH_SHORT).show();
     });
 
     // Xử lý khi bấm nút Facebook
     facebookButton.setOnClickListener(v -> {
-      Toast.makeText(this, "Facebook login clicked", Toast.LENGTH_SHORT).show();
+      // Toast.makeText(this, "Đăng nhập Facebook được nhấn", Toast.LENGTH_SHORT).show();
     });
 
     // Chuyển sang màn hình Register
@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
 
   private void onLoginSuccess() {
     setLoading(false);
-    Toast.makeText(this, "Login success", Toast.LENGTH_SHORT).show();
+    Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
 
     Log.d(TAG, "Login successful: " + userManager.getUserInfoDebug());
 
@@ -178,6 +178,6 @@ public class LoginActivity extends AppCompatActivity {
 
   private void setLoading(boolean loading) {
     loginButton.setEnabled(!loading);
-    loginButton.setText(loading ? "Signing in..." : "LOGIN");
+    loginButton.setText(loading ? "Đang đăng nhập..." : "ĐĂNG NHẬP");
   }
 }

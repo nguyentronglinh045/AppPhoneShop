@@ -54,12 +54,12 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.VariantV
     holder.textVariantDetails.setText(details);
 
     // Display stock quantity with appropriate color based on availability
-    String stockText = "Stock: " + variant.getStockQuantity();
+    String stockText = "Tồn kho: " + variant.getStockQuantity();
     holder.textVariantStock.setText(stockText);
 
     // Display availability status
     if (variant.isAvailable()) {
-      holder.textVariantAvailable.setText("Available");
+      holder.textVariantAvailable.setText("Còn hàng");
       holder.textVariantAvailable.setBackgroundColor(Color.parseColor("#4CAF50")); // holo_green_light
 
       // Set stock quantity text color based on quantity
@@ -69,7 +69,7 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.VariantV
         holder.textVariantStock.setTextColor(Color.parseColor("#FFA500")); // orange
       }
     } else {
-      holder.textVariantAvailable.setText("Unavailable");
+      holder.textVariantAvailable.setText("Hết hàng");
       holder.textVariantAvailable.setBackgroundColor(Color.parseColor("#F44336")); // holo_red_light
       holder.textVariantStock.setTextColor(Color.GRAY);
     }

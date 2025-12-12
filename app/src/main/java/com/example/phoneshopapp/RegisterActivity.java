@@ -60,11 +60,11 @@ public class RegisterActivity extends AppCompatActivity {
     registerButton.setOnClickListener(v -> handleRegistration());
 
     googleButton.setOnClickListener(v -> {
-      Toast.makeText(this, "Google registration clicked", Toast.LENGTH_SHORT).show();
+      // Toast.makeText(this, "Đăng ký Google được nhấn", Toast.LENGTH_SHORT).show();
     });
 
     facebookButton.setOnClickListener(v -> {
-      Toast.makeText(this, "Facebook registration clicked", Toast.LENGTH_SHORT).show();
+      // Toast.makeText(this, "Đăng ký Facebook được nhấn", Toast.LENGTH_SHORT).show();
     });
 
     // Set click listener for login link
@@ -133,7 +133,7 @@ public class RegisterActivity extends AppCompatActivity {
 
   private void onRegistrationSuccess() {
     setLoading(false);
-    Toast.makeText(this, "Registration successful! Welcome to PhoneShop!", Toast.LENGTH_SHORT).show();
+    Toast.makeText(this, "Đăng ký thành công! Chào mừng đến với PhoneShop!", Toast.LENGTH_SHORT).show();
 
     // Navigate to main activity
     Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
@@ -147,7 +147,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     // Validate full name
     if (fullNameLayout.getEditText().getText().toString().trim().isEmpty()) {
-      fullNameLayout.setError("Full name is required");
+      fullNameLayout.setError("Vui lòng nhập họ và tên");
       isValid = false;
     } else {
       fullNameLayout.setError(null);
@@ -156,10 +156,10 @@ public class RegisterActivity extends AppCompatActivity {
     // Validate email
     String email = emailLayout.getEditText().getText().toString().trim();
     if (email.isEmpty()) {
-      emailLayout.setError("Email is required");
+      emailLayout.setError("Vui lòng nhập email");
       isValid = false;
     } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-      emailLayout.setError("Enter a valid email address");
+      emailLayout.setError("Email không hợp lệ");
       isValid = false;
     } else {
       emailLayout.setError(null);
@@ -168,7 +168,7 @@ public class RegisterActivity extends AppCompatActivity {
     // Validate phone
     String phone = phoneLayout.getEditText().getText().toString().trim();
     if (phone.isEmpty()) {
-      phoneLayout.setError("Phone number is required");
+      phoneLayout.setError("Vui lòng nhập số điện thoại");
       isValid = false;
     } else {
       phoneLayout.setError(null);
@@ -177,10 +177,10 @@ public class RegisterActivity extends AppCompatActivity {
     // Validate password
     String password = passwordLayout.getEditText().getText().toString();
     if (password.isEmpty()) {
-      passwordLayout.setError("Password is required");
+      passwordLayout.setError("Vui lòng nhập mật khẩu");
       isValid = false;
     } else if (password.length() < 6) {
-      passwordLayout.setError("Password must be at least 6 characters");
+      passwordLayout.setError("Mật khẩu phải có ít nhất 6 ký tự");
       isValid = false;
     } else {
       passwordLayout.setError(null);
@@ -189,10 +189,10 @@ public class RegisterActivity extends AppCompatActivity {
     // Validate confirm password
     String confirmPassword = confirmPasswordLayout.getEditText().getText().toString();
     if (confirmPassword.isEmpty()) {
-      confirmPasswordLayout.setError("Please confirm your password");
+      confirmPasswordLayout.setError("Vui lòng xác nhận mật khẩu");
       isValid = false;
     } else if (!confirmPassword.equals(password)) {
-      confirmPasswordLayout.setError("Passwords do not match");
+      confirmPasswordLayout.setError("Mật khẩu không khớp");
       isValid = false;
     } else {
       confirmPasswordLayout.setError(null);
@@ -203,6 +203,6 @@ public class RegisterActivity extends AppCompatActivity {
 
   private void setLoading(boolean loading) {
     registerButton.setEnabled(!loading);
-    registerButton.setText(loading ? "Creating account..." : "Register");
+    registerButton.setText(loading ? "Đang tạo tài khoản..." : "ĐĂNG KÝ");
   }
 }

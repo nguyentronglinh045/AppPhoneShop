@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="Product Variants"
+        android:text="Phiên bản sản phẩm"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Add Variant"
+        android:text="Thêm phiên bản"
         android:backgroundTint="@color/primary"
         android:textColor="@android:color/white" />
 

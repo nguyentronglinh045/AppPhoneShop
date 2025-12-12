@@ -9,7 +9,7 @@
         android:id="@+id/dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add New Product"
+        android:text="Thêm sản phẩm mới"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp"
@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Note: All products require at least one variant. You will add variants after saving the product."
+        android:text="Lưu ý: Tất cả sản phẩm cần ít nhất một phiên bản. Bạn sẽ thêm phiên bản sau khi lưu sản phẩm."
         android:textSize="13sp"
         android:textColor="@android:color/holo_orange_dark"
         android:layout_marginBottom="16dp"

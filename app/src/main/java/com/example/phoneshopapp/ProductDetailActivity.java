@@ -172,7 +172,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     String productId = getIntent().getStringExtra(EXTRA_PRODUCT_ID);
 
     if (productId == null || productId.isEmpty()) {
-      Toast.makeText(this, "Product not found", Toast.LENGTH_SHORT).show();
+      Toast.makeText(this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
       finish();
       return;
     }
@@ -190,7 +190,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         product = findProductById(products, productId);
 
         if (product == null) {
-          Toast.makeText(ProductDetailActivity.this, "Product not found", Toast.LENGTH_SHORT).show();
+          Toast.makeText(ProductDetailActivity.this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
           finish();
           return;
         }
@@ -201,7 +201,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
       @Override
       public void onFailure(Exception e) {
-        Toast.makeText(ProductDetailActivity.this, "Failed to load product: " + e.getMessage(), Toast.LENGTH_LONG)
+        Toast.makeText(ProductDetailActivity.this, "Lỗi tải sản phẩm: " + e.getMessage(), Toast.LENGTH_LONG)
             .show();
         finish();
       }
@@ -296,7 +296,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             Log.e("ProductDetail", "Failed to load variants", e);
             layoutVariantSection.setVisibility(android.view.View.GONE);
             Toast.makeText(ProductDetailActivity.this,
-                "Failed to load variants: " + e.getMessage(),
+                "Lỗi tải phiên bản: " + e.getMessage(),
                 Toast.LENGTH_SHORT).show();
           }
         });
@@ -308,14 +308,14 @@ public class ProductDetailActivity extends AppCompatActivity {
     storageAdapter.setStorageOptions(allVariants);
 
     // Reset selection
-    textSelectedVariant.setText("Please select variant");
+    textSelectedVariant.setText("Vui lòng chọn phiên bản");
   }
 
   private void updateSelectedVariant() {
     // Find the variant matching selected color and storage/RAM
     if (selectedColor == null || selectedStorage == null || selectedRam == null) {
       selectedVariant = null;
-      textSelectedVariant.setText("Please select variant");
+      textSelectedVariant.setText("Vui lòng chọn phiên bản");
       layoutAvailability.setVisibility(android.view.View.GONE);
       return;
     }
@@ -332,7 +332,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     if (selectedVariant != null) {
       // Update display
-      textSelectedVariant.setText("Selected: " + selectedVariant.getShortName());
+      textSelectedVariant.setText("Đã chọn: " + selectedVariant.getShortName());
 
       // Update specs based on selected variant
       textSpecRam.setText(selectedVariant.getRam());
@@ -341,7 +341,7 @@ public class ProductDetailActivity extends AppCompatActivity {
       // Update availability
       updateAvailabilityDisplay();
     } else {
-      textSelectedVariant.setText("Selected combination not available");
+      textSelectedVariant.setText("Phiên bản đã chọn không có sẵn");
       layoutAvailability.setVisibility(android.view.View.GONE);
     }
   }
@@ -355,13 +355,13 @@ public class ProductDetailActivity extends AppCompatActivity {
     layoutAvailability.setVisibility(android.view.View.VISIBLE);
 
     if (selectedVariant.isInStock()) {
-      textAvailability.setText("In Stock (" + selectedVariant.getStockQuantity() + " available)");
+      textAvailability.setText("Còn hàng (" + selectedVariant.getStockQuantity() + " sản phẩm)");
       textAvailability.setTextColor(getColor(R.color.success_color));
       android.graphics.drawable.GradientDrawable dotDrawable = (android.graphics.drawable.GradientDrawable) viewAvailabilityDot
           .getBackground();
       dotDrawable.setColor(getColor(R.color.success_color));
     } else {
-      textAvailability.setText("Out of Stock");
+      textAvailability.setText("Hết hàng");
       textAvailability.setTextColor(getColor(R.color.error_color));
       android.graphics.drawable.GradientDrawable dotDrawable = (android.graphics.drawable.GradientDrawable) viewAvailabilityDot
           .getBackground();
@@ -410,7 +410,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         // Revert on error
         isFavorite = !isFavorite;
         updateFavoriteButton();
-        Toast.makeText(ProductDetailActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ProductDetailActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
       }
     });
   }
@@ -455,13 +455,13 @@ public class ProductDetailActivity extends AppCompatActivity {
       // Validate variant selection if product has variants
       if (product.isHasVariants()) {
         if (selectedVariant == null) {
-          Toast.makeText(this, "Please select a variant (color, storage, RAM) before adding to cart",
+          Toast.makeText(this, "Vui lòng chọn phiên bản sản phẩm (màu sắc, dung lượng, RAM) trước khi thêm vào giỏ hàng",
               Toast.LENGTH_LONG).show();
           return;
         }
 
         if (!selectedVariant.isInStock()) {
-          Toast.makeText(this, "Selected variant is out of stock", Toast.LENGTH_SHORT).show();
+          Toast.makeText(this, "Phiên bản sản phẩm đã chọn đã hết hàng", Toast.LENGTH_SHORT).show();
           return;
         }
 
@@ -478,7 +478,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
       // Check stock quantity for variant
       if (selectedVariant != null && quantity > selectedVariant.getStockQuantity()) {
-        Toast.makeText(this, "Only " + selectedVariant.getStockQuantity() + " items available",
+        Toast.makeText(this, "Chỉ còn " + selectedVariant.getStockQuantity() + " sản phẩm",
             Toast.LENGTH_SHORT).show();
         return;
       }
@@ -500,7 +500,7 @@ public class ProductDetailActivity extends AppCompatActivity {
           runOnUiThread(() -> {
             Toast.makeText(ProductDetailActivity.this, message, Toast.LENGTH_SHORT).show();
             btnAddToCart.setEnabled(true);
-            btnAddToCart.setText("Add to Cart");
+            btnAddToCart.setText("Thêm vào giỏ hàng");
           });
         }
 
@@ -510,7 +510,7 @@ public class ProductDetailActivity extends AppCompatActivity {
           runOnUiThread(() -> {
             Toast.makeText(ProductDetailActivity.this, error, Toast.LENGTH_LONG).show();
             btnAddToCart.setEnabled(true);
-            btnAddToCart.setText("Add to Cart");
+            btnAddToCart.setText("Thêm vào giỏ hàng");
           });
         }
       });
@@ -526,13 +526,13 @@ public class ProductDetailActivity extends AppCompatActivity {
       // Validate variant selection if product has variants
       if (product.isHasVariants()) {
         if (selectedVariant == null) {
-          Toast.makeText(this, "Please select a variant (color, storage, RAM) before buying",
+          Toast.makeText(this, "Vui lòng chọn phiên bản sản phẩm (màu sắc, dung lượng, RAM) trước khi mua",
               Toast.LENGTH_LONG).show();
           return;
         }
 
         if (!selectedVariant.isInStock()) {
-          Toast.makeText(this, "Selected variant is out of stock", Toast.LENGTH_SHORT).show();
+          Toast.makeText(this, "Phiên bản sản phẩm đã chọn đã hết hàng", Toast.LENGTH_SHORT).show();
           return;
         }
       }
@@ -541,7 +541,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
       // Check stock quantity for variant
       if (selectedVariant != null && quantity > selectedVariant.getStockQuantity()) {
-        Toast.makeText(this, "Only " + selectedVariant.getStockQuantity() + " items available",
+        Toast.makeText(this, "Chỉ còn " + selectedVariant.getStockQuantity() + " sản phẩm",
             Toast.LENGTH_SHORT).show();
         return;
       }
@@ -557,7 +557,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             Toast.makeText(ProductDetailActivity.this, "Đã thêm vào giỏ hàng",
                 Toast.LENGTH_SHORT).show();
             btnBuyNow.setEnabled(true);
-            btnBuyNow.setText("Buy Now");
+            btnBuyNow.setText("Mua ngay");
             
             // Navigate to CartActivity with auto-selection info via Intent
             Intent cartIntent = new Intent(ProductDetailActivity.this, CartActivity.class);
@@ -572,7 +572,7 @@ public class ProductDetailActivity extends AppCompatActivity {
           runOnUiThread(() -> {
             Toast.makeText(ProductDetailActivity.this, error, Toast.LENGTH_LONG).show();
             btnBuyNow.setEnabled(true);
-            btnBuyNow.setText("Buy Now");
+            btnBuyNow.setText("Mua ngay");
           });
         }
       });

@@ -36,10 +36,10 @@ public class AdminFragment extends Fragment {
         (tab, position) -> {
           switch (position) {
             case 0:
-              tab.setText("Products");
+              tab.setText("Sản phẩm");
               break;
             case 1:
-              tab.setText("Orders");
+              tab.setText("Đơn hàng");
               break;
           }
         }).attach();

@@ -48,7 +48,7 @@ public class ManageVariantsActivity extends AppCompatActivity {
     setSupportActionBar(toolbar);
     if (getSupportActionBar() != null) {
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      getSupportActionBar().setTitle("Manage Variants");
+      getSupportActionBar().setTitle("Quản lý phiên bản");
     }
 
     // Initialize views
@@ -56,7 +56,7 @@ public class ManageVariantsActivity extends AppCompatActivity {
     recyclerVariants = findViewById(R.id.recyclerVariants);
     btnAddVariant = findViewById(R.id.btnAddVariant);
 
-    textProductName.setText("Variants for: " + productName);
+    textProductName.setText("Phiên bản của: " + productName);
 
     // Initialize repository
     variantRepository = new VariantRepository();
@@ -91,14 +91,14 @@ public class ManageVariantsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         if (variants.isEmpty()) {
-          Toast.makeText(ManageVariantsActivity.this, "No variants found. Please add at least one.", Toast.LENGTH_LONG)
+          Toast.makeText(ManageVariantsActivity.this, "Không tìm thấy phiên bản nào. Vui lòng thêm ít nhất một phiên bản.", Toast.LENGTH_LONG)
               .show();
         }
       }
 
       @Override
       public void onFailure(Exception e) {
-        Toast.makeText(ManageVariantsActivity.this, "Error loading variants: " + e.getMessage(), Toast.LENGTH_SHORT)
+        Toast.makeText(ManageVariantsActivity.this, "Lỗi tải phiên bản: " + e.getMessage(), Toast.LENGTH_SHORT)
             .show();
       }
     });
@@ -154,7 +154,7 @@ public class ManageVariantsActivity extends AppCompatActivity {
 
       // Validation
       if (color.isEmpty()) {
-        Toast.makeText(this, "Please fill in color field", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Vui lòng nhập màu sắc", Toast.LENGTH_SHORT).show();
         return;
       }
 
@@ -186,14 +186,14 @@ public class ManageVariantsActivity extends AppCompatActivity {
       variantRepository.createVariant(variant, new VariantRepository.OnVariantSavedListener() {
         @Override
         public void onSuccess() {
-          Toast.makeText(ManageVariantsActivity.this, "Variant added successfully", Toast.LENGTH_SHORT).show();
+          Toast.makeText(ManageVariantsActivity.this, "Đã thêm phiên bản thành công", Toast.LENGTH_SHORT).show();
           loadVariants();
           dialog.dismiss();
         }
 
         @Override
         public void onFailure(Exception e) {
-          Toast.makeText(ManageVariantsActivity.this, "Error adding variant: " + e.getMessage(), Toast.LENGTH_SHORT)
+          Toast.makeText(ManageVariantsActivity.this, "Lỗi thêm phiên bản: " + e.getMessage(), Toast.LENGTH_SHORT)
               .show();
         }
       });
@@ -248,7 +248,7 @@ public class ManageVariantsActivity extends AppCompatActivity {
 
       // Validation
       if (color.isEmpty()) {
-        Toast.makeText(this, "Please fill in color field", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Vui lòng điền trường màu sắc", Toast.LENGTH_SHORT).show();
         return;
       }
 
@@ -278,14 +278,14 @@ public class ManageVariantsActivity extends AppCompatActivity {
       variantRepository.updateVariant(variant, new VariantRepository.OnVariantSavedListener() {
         @Override
         public void onSuccess() {
-          Toast.makeText(ManageVariantsActivity.this, "Variant updated successfully", Toast.LENGTH_SHORT).show();
+          Toast.makeText(ManageVariantsActivity.this, "Đã cập nhật phiên bản sản phẩm thành công", Toast.LENGTH_SHORT).show();
           loadVariants();
           dialog.dismiss();
         }
 
         @Override
         public void onFailure(Exception e) {
-          Toast.makeText(ManageVariantsActivity.this, "Error updating variant: " + e.getMessage(), Toast.LENGTH_SHORT)
+          Toast.makeText(ManageVariantsActivity.this, "Lỗi cập nhật phiên bản sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT)
               .show();
         }
       });
@@ -313,24 +313,24 @@ public class ManageVariantsActivity extends AppCompatActivity {
   private void onDeleteVariant(ProductVariant variant) {
     // Confirmation dialog
     new AlertDialog.Builder(this)
-        .setTitle("Delete Variant")
-        .setMessage("Are you sure you want to delete this variant?")
-        .setPositiveButton("Delete", (dialog, which) -> {
+        .setTitle("Xóa phiên bản")
+        .setMessage("Bạn có chắc chắn muốn xóa phiên bản này không?")
+        .setPositiveButton("Xóa", (dialog, which) -> {
           variantRepository.deleteVariant(variant.getVariantId(), new VariantRepository.OnVariantDeletedListener() {
             @Override
             public void onSuccess() {
-              Toast.makeText(ManageVariantsActivity.this, "Variant deleted successfully", Toast.LENGTH_SHORT).show();
+              Toast.makeText(ManageVariantsActivity.this, "Đã xóa phiên bản thành công", Toast.LENGTH_SHORT).show();
               loadVariants();
             }
 
             @Override
             public void onFailure(Exception e) {
-              Toast.makeText(ManageVariantsActivity.this, "Error deleting variant: " + e.getMessage(),
+              Toast.makeText(ManageVariantsActivity.this, "Lỗi xóa phiên bản: " + e.getMessage(),
                   Toast.LENGTH_SHORT).show();
             }
           });
         })
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton("Hủy", null)
         .show();
   }
 }

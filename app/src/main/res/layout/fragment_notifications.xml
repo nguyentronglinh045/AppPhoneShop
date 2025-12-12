@@ -22,7 +22,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cart"
+            android:text="Giỏ hàng"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/white" />
@@ -31,7 +31,7 @@
             android:id="@+id/textItemCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 items"
+            android:text="0 sản phẩm"
             android:textSize="16sp"
             android:textColor="@android:color/white" />
 
@@ -72,7 +72,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your cart is empty"
+            android:text="Giỏ hàng trống"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/text_secondary"
@@ -81,7 +81,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add some products to get started"
+            android:text="Thêm sản phẩm để bắt đầu"
             android:textSize="16sp"
             android:textColor="@color/text_secondary" />
 
@@ -110,7 +110,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Total:"
+                android:text="Tổng:"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -131,7 +131,7 @@
             android:id="@+id/btnCheckout"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Proceed to Checkout"
+            android:text="Tiến hành thanh toán"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"

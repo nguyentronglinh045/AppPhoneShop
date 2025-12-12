@@ -4,26 +4,26 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_24"
-        android:title="Home" />
+        android:title="Trang chủ" />
 
     <item
         android:id="@+id/navigation_categories"
         android:icon="@drawable/ic_category_24"
-        android:title="Categories" />
+        android:title="Danh mục" />
 
     <item
         android:id="@+id/navigation_cart"
         android:icon="@drawable/ic_shopping_cart_24"
-        android:title="Cart" />
+        android:title="Giỏ hàng" />
         
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_person_24"
-        android:title="Profile" />
+        android:title="Hồ sơ" />
 
     <item
         android:id="@+id/navigation_admin"
         android:icon="@drawable/ic_admin_24"
-        android:title="Admin" />
+        android:title="Quản trị" />
 
 </menu>

@@ -24,7 +24,7 @@
             android:id="@+id/textProductName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Name"
+            android:text="Tên sản phẩm"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"

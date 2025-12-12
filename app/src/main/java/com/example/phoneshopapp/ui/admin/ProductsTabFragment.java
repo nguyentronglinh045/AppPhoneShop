@@ -57,7 +57,7 @@ public class ProductsTabFragment extends Fragment {
 
           @Override
           public void onFailure(Exception e) {
-            Toast.makeText(getContext(), "Error loading products: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Lỗi tải sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
           }
         });
   }
@@ -74,7 +74,7 @@ public class ProductsTabFragment extends Fragment {
 
           @Override
           public void onFailure(Exception e) {
-            Toast.makeText(getContext(), "Error loading products: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Lỗi tải sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
           }
         });
   }
@@ -115,7 +115,7 @@ public class ProductsTabFragment extends Fragment {
       String imageUrl = editImageUrl.getText().toString().trim();
 
       if (name.isEmpty() || price.isEmpty()) {
-        Toast.makeText(getContext(), "Please enter product name and price", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Vui lòng nhập tên và giá sản phẩm", Toast.LENGTH_SHORT).show();
         return;
       }
 
@@ -173,7 +173,7 @@ public class ProductsTabFragment extends Fragment {
       String imageUrl = editImageUrl.getText().toString().trim();
 
       if (name.isEmpty() || price.isEmpty()) {
-        Toast.makeText(getContext(), "Please enter product name and price", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Vui lòng nhập tên và giá sản phẩm", Toast.LENGTH_SHORT).show();
         return;
       }
 
@@ -195,12 +195,12 @@ public class ProductsTabFragment extends Fragment {
           .document(product.getId())
           .set(product)
           .addOnSuccessListener(aVoid -> {
-            Toast.makeText(getContext(), "Product updated: " + product.getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Đã cập nhật sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
             forceRefreshProducts();
             dialog.dismiss();
           })
           .addOnFailureListener(e -> {
-            Toast.makeText(getContext(), "Error updating product: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Lỗi cập nhật sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
           });
     });
 
@@ -210,23 +210,23 @@ public class ProductsTabFragment extends Fragment {
   private void onDeleteProduct(Product product) {
     // Confirmation dialog for deleting product
     new androidx.appcompat.app.AlertDialog.Builder(getContext())
-        .setTitle("Delete Product")
-        .setMessage("Are you sure you want to delete \"" + product.getName() + "\"?")
-        .setPositiveButton("Delete", (dialog, which) -> {
+        .setTitle("Xóa sản phẩm")
+        .setMessage("Bạn có chắc chắn muốn xóa \"" + product.getName() + "\" không?")
+        .setPositiveButton("Xóa", (dialog, which) -> {
           // Delete product from Firestore
           FirebaseFirestore db = FirebaseFirestore.getInstance();
           db.collection("PhoneDB")
               .document(product.getId())
               .delete()
               .addOnSuccessListener(aVoid -> {
-                Toast.makeText(getContext(), "Product deleted: " + product.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Đã xóa sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
                 forceRefreshProducts();
               })
               .addOnFailureListener(e -> {
-                Toast.makeText(getContext(), "Error deleting product: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi xóa sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
               });
         })
-        .setNegativeButton("Cancel", null)
+        .setNegativeButton("Hủy", null)
         .show();
   }
 
@@ -266,7 +266,7 @@ public class ProductsTabFragment extends Fragment {
         .document(newId)
         .set(newProduct)
         .addOnSuccessListener(aVoid -> {
-          Toast.makeText(getContext(), "Product added. Please add variants now.", Toast.LENGTH_LONG).show();
+          Toast.makeText(getContext(), "Đã thêm sản phẩm. Vui lòng thêm biến thể ngay.", Toast.LENGTH_LONG).show();
           forceRefreshProducts();
           dialog.dismiss();
 
@@ -277,7 +277,7 @@ public class ProductsTabFragment extends Fragment {
           startActivity(intent);
         })
         .addOnFailureListener(e -> {
-          Toast.makeText(getContext(), "Error adding product: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+          Toast.makeText(getContext(), "Lỗi thêm sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
   }
 }

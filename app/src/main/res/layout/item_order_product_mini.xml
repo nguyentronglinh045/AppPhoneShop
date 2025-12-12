@@ -27,7 +27,7 @@
             android:id="@+id/textProductName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Name"
+            android:text="Tên sản phẩm"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="14sp" />
@@ -36,7 +36,7 @@
             android:id="@+id/textVariantName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Variant"
+            android:text="Phiên bản"
             android:textSize="12sp"
             android:textColor="@android:color/darker_gray" />
 

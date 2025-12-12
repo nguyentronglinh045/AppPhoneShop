@@ -16,7 +16,7 @@
         android:id="@+id/btnAddProduct"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add New Product"
+        android:text="Thêm sản phẩm mới"
         android:backgroundTint="@color/primary"
         android:textColor="@android:color/white" />
 

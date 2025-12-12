@@ -44,30 +44,30 @@ public class OrderAdminAdapter extends RecyclerView.Adapter<OrderAdminAdapter.Or
     Order order = orders.get(position);
 
     // Display order ID
-    holder.textOrderId.setText("Order: " + order.getOrderId());
+    holder.textOrderId.setText("Đơn hàng: " + order.getOrderId());
 
     // Display status
     holder.textOrderStatus.setText(order.getStatusDisplayName());
 
     // Display customer name
     if (order.getCustomerInfo() != null) {
-      holder.textCustomerName.setText("Customer: " + order.getCustomerInfo().getFullName());
+      holder.textCustomerName.setText("Khách hàng: " + order.getCustomerInfo().getFullName());
     } else {
-      holder.textCustomerName.setText("Customer: N/A");
+      holder.textCustomerName.setText("Khách hàng: Không có");
     }
 
     // Display order date
     if (order.getCreatedAt() != null) {
       SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-      holder.textOrderDate.setText("Date: " + dateFormat.format(order.getCreatedAt()));
+      holder.textOrderDate.setText("Ngày: " + dateFormat.format(order.getCreatedAt()));
     } else {
-      holder.textOrderDate.setText("Date: N/A");
+      holder.textOrderDate.setText("Ngày: Không có");
     }
 
     // Display total amount
     NumberFormat currencyFormat = NumberFormat
         .getCurrencyInstance(new Locale.Builder().setLanguage("vi").setRegion("VN").build());
-    holder.textOrderTotal.setText("Total: " + currencyFormat.format(order.getTotalAmount()));
+    holder.textOrderTotal.setText("Tổng cộng: " + currencyFormat.format(order.getTotalAmount()));
 
     // Setup product items recycler view
     if (order.getItems() != null && !order.getItems().isEmpty()) {
